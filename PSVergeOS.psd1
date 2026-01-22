@@ -39,8 +39,38 @@
 
         # VM
         'Get-VergeVM'
+        'Get-VergeVMConsole'
+        'Import-VergeVM'
+        'Move-VergeVM'
+        'New-VergeVM'
+        'New-VergeVMClone'
+        'Remove-VergeVM'
+        'Restart-VergeVM'
+        'Set-VergeVM'
         'Start-VergeVM'
         'Stop-VergeVM'
+
+        # VM Drives
+        'Get-VergeDrive'
+        'Import-VergeDrive'
+        'New-VergeDrive'
+        'Remove-VergeDrive'
+        'Set-VergeDrive'
+
+        # VM NICs
+        'Get-VergeNIC'
+        'New-VergeNIC'
+        'Remove-VergeNIC'
+        'Set-VergeNIC'
+
+        # VM Snapshots
+        'Get-VergeVMSnapshot'
+        'New-VergeVMSnapshot'
+        'Remove-VergeVMSnapshot'
+        'Restore-VergeVMSnapshot'
+
+        # Storage/Files
+        'Get-VergeFile'
     )
 
     # Cmdlets to export from this module

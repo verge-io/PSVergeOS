@@ -107,10 +107,10 @@ function Connect-VergeOS {
             $connection.Username = $Credential.UserName
         }
 
-        # Test authentication by calling a simple endpoint
+        # Test authentication by calling system endpoint to get version info
         $testParams = @{
             Method  = 'GET'
-            Uri     = "$($connection.ApiBaseUrl)/system"
+            Uri     = "$($connection.ApiBaseUrl)/system?fields=yb_version,os_version,cloud_name,branch"
             Headers = @{
                 'Authorization' = $authHeader
                 'Accept'        = 'application/json'
@@ -121,9 +121,17 @@ function Connect-VergeOS {
         }
 
         Write-Verbose "Authenticating to $Server as $($connection.Username)"
-        $systemInfo = Invoke-RestMethod @testParams -ErrorAction Stop
+        $systemResponse = Invoke-RestMethod @testParams -ErrorAction Stop
 
-        $connection.VergeOSVersion = $systemInfo.version
+        # Response is an array, get first element
+        $systemInfo = if ($systemResponse -is [array]) { $systemResponse[0] } else { $systemResponse }
+
+        # Get version from yb_version or os_version
+        $connection.VergeOSVersion = $systemInfo.yb_version ?? $systemInfo.os_version
+
+        # Store additional system info
+        $connection | Add-Member -NotePropertyName 'CloudName' -NotePropertyValue $systemInfo.cloud_name -Force
+        $connection | Add-Member -NotePropertyName 'Branch' -NotePropertyValue $systemInfo.branch -Force
 
         # Store auth type for later use
         $connection | Add-Member -NotePropertyName 'AuthType' -NotePropertyValue $(

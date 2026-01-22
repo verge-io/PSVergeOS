@@ -158,6 +158,7 @@ function Get-VergeVM {
             'guest_agent'
             'uefi'
             'secure_boot'
+            'machine_type'
             'created'
             'modified'
             'is_snapshot'
@@ -222,6 +223,9 @@ function Get-VergeVM {
                     default        { $vm.status }
                 }
 
+                # Determine if VM uses Q35 chipset (vs i440FX)
+                $isQ35 = $vm.machine_type -and $vm.machine_type -like '*q35*'
+
                 # Create output object
                 $output = [PSCustomObject]@{
                     PSTypeName       = 'Verge.VM'
@@ -237,6 +241,8 @@ function Get-VergeVM {
                     GuestAgent       = [bool]$vm.guest_agent
                     UEFI             = [bool]$vm.uefi
                     SecureBoot       = [bool]$vm.secure_boot
+                    MachineType      = $vm.machine_type
+                    IsQ35            = $isQ35
                     Enabled          = [bool]$vm.enabled
                     IsSnapshot       = [bool]$vm.is_snapshot
                     Cluster          = $vm.cluster_name
