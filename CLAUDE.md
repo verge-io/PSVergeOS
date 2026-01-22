@@ -68,8 +68,9 @@ Invoke-ScriptAnalyzer -Path ./Public -Recurse
 
 | Document | When to Read |
 |----------|--------------|
-| `PRD.md` | Understanding requirements, API mappings, and cmdlet specifications |
+| `.claude/PRD.md` | Understanding requirements, API mappings, and cmdlet specifications |
 | `.claude/reference/api-schema/endpoints/` | VergeOS API field definitions, actions, and validation rules |
+| `.claude/TESTENV.md` | creds, names, etc for testing against a live system |
 | `Examples/` | Copy-pasteable scripts for common automation scenarios |
 
 ## Architecture
