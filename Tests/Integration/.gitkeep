@@ -1,0 +1,4 @@
+# Integration tests require a live VergeOS instance
+# Set the following environment variables before running:
+#   VERGE_SERVER - VergeOS server hostname
+#   VERGE_TOKEN  - API token for authentication
