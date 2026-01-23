@@ -192,7 +192,8 @@ function Get-VergeAlarm {
         else {
             # Filter by level
             if ($Level -and $Level.Count -gt 0) {
-                $levelFilters = $Level | ForEach-Object { "level eq '$($_.ToLower())'" }
+                # Force array output to avoid string indexing issues
+                $levelFilters = @($Level | ForEach-Object { "level eq '$($_.ToLower())'" })
                 if ($levelFilters.Count -eq 1) {
                     $filters.Add($levelFilters[0])
                 }
