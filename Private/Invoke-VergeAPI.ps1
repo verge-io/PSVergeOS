@@ -120,7 +120,20 @@ function Invoke-VergeAPI {
         if ($errorMessage) {
             try {
                 $errorObj = $errorMessage | ConvertFrom-Json
-                $errorMessage = $errorObj.err -or $errorObj.error -or $errorObj.message -or $errorMessage
+                # Check for error message in various fields (handle both string and bool 'err')
+                if ($errorObj.err -and $errorObj.err -is [string]) {
+                    $errorMessage = $errorObj.err
+                }
+                elseif ($errorObj.error -and $errorObj.error -is [string]) {
+                    $errorMessage = $errorObj.error
+                }
+                elseif ($errorObj.message -and $errorObj.message -is [string]) {
+                    $errorMessage = $errorObj.message
+                }
+                elseif ($errorObj.err -eq $true -and $errorObj.message) {
+                    $errorMessage = $errorObj.message
+                }
+                # Keep original error message if no string found
             }
             catch {
                 # Keep original error message

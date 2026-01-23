@@ -125,6 +125,47 @@
         'Remove-VergeWireGuard'
         'Remove-VergeWireGuardPeer'
         'Set-VergeWireGuard'
+
+        # Storage - Volumes
+        'Get-VergeVolume'
+        'New-VergeVolume'
+        'Set-VergeVolume'
+        'Remove-VergeVolume'
+        'Get-VergeVolumeSnapshot'
+        'New-VergeVolumeSnapshot'
+        'Remove-VergeVolumeSnapshot'
+        'Get-VergeCIFSShare'
+        'New-VergeCIFSShare'
+        'Remove-VergeCIFSShare'
+
+        # Users
+        'Get-VergeUser'
+        'New-VergeUser'
+        'Set-VergeUser'
+        'Remove-VergeUser'
+        'Enable-VergeUser'
+        'Disable-VergeUser'
+
+        # API Keys
+        'Get-VergeAPIKey'
+        'New-VergeAPIKey'
+        'Remove-VergeAPIKey'
+
+        # Groups
+        'Get-VergeGroup'
+        'New-VergeGroup'
+        'Set-VergeGroup'
+        'Remove-VergeGroup'
+
+        # Group Members
+        'Get-VergeGroupMember'
+        'Add-VergeGroupMember'
+        'Remove-VergeGroupMember'
+
+        # Permissions
+        'Get-VergePermission'
+        'Grant-VergePermission'
+        'Revoke-VergePermission'
     )
 
     # Cmdlets to export from this module
