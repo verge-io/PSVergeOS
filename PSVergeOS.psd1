@@ -271,6 +271,36 @@
 
         # Logs
         'Get-VergeLog'
+
+        # Backup/DR - Snapshot Profiles
+        'Get-VergeSnapshotProfile'
+        'New-VergeSnapshotProfile'
+        'Set-VergeSnapshotProfile'
+        'Remove-VergeSnapshotProfile'
+
+        # Backup/DR - Cloud Snapshots
+        'Get-VergeCloudSnapshot'
+        'New-VergeCloudSnapshot'
+        'Remove-VergeCloudSnapshot'
+        'Restore-VergeVMFromCloudSnapshot'
+        'Restore-VergeTenantFromCloudSnapshot'
+
+        # Backup/DR - Sites
+        'Get-VergeSite'
+        'New-VergeSite'
+        'Remove-VergeSite'
+
+        # Backup/DR - Site Syncs
+        'Get-VergeSiteSync'
+        'Get-VergeSiteSyncIncoming'
+        'Start-VergeSiteSync'
+        'Stop-VergeSiteSync'
+        'Invoke-VergeSiteSync'
+
+        # Backup/DR - Site Sync Schedules
+        'Get-VergeSiteSyncSchedule'
+        'New-VergeSiteSyncSchedule'
+        'Remove-VergeSiteSyncSchedule'
     )
 
     # Cmdlets to export from this module
