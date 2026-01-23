@@ -165,6 +165,17 @@
         'Enable-VergeNASUser'
         'Disable-VergeNASUser'
 
+        # NAS Volume Sync
+        'Get-VergeNASVolumeSync'
+        'New-VergeNASVolumeSync'
+        'Set-VergeNASVolumeSync'
+        'Remove-VergeNASVolumeSync'
+        'Start-VergeNASVolumeSync'
+        'Stop-VergeNASVolumeSync'
+
+        # NAS Volume Browser
+        'Get-VergeNASVolumeFile'
+
         # Users
         'Get-VergeUser'
         'New-VergeUser'
