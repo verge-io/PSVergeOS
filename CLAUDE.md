@@ -71,6 +71,7 @@ Invoke-ScriptAnalyzer -Path ./Public -Recurse
 | `.claude/PRD.md` | Understanding requirements, API mappings, and cmdlet specifications |
 | `.claude/reference/api-schema/endpoints/` | VergeOS API field definitions, actions, and validation rules |
 | `.claude/TESTENV.md` | creds, names, etc for testing against a live system |
+| `.claude/traffic-flow.md` | VergeOS Network Traffic Flow |
 | `Examples/` | Copy-pasteable scripts for common automation scenarios |
 
 ## Architecture

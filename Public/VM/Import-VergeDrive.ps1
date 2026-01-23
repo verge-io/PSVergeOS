@@ -119,6 +119,12 @@ function Import-VergeDrive {
 
         [Parameter()]
         [ValidateRange(1, 5)]
+        [ValidateScript({
+            if ($_ -eq 0) {
+                throw "Tier 0 is reserved for system metadata and cannot be used for VM drives."
+            }
+            $true
+        })]
         [int]$Tier,
 
         [Parameter()]
