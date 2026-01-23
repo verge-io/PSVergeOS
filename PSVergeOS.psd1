@@ -71,6 +71,55 @@
 
         # Storage/Files
         'Get-VergeFile'
+
+        # Network
+        'Get-VergeNetwork'
+        'Get-VergeNetworkAlias'
+        'Get-VergeNetworkHost'
+        'Get-VergeNetworkRule'
+        'Invoke-VergeNetworkApply'
+        'New-VergeNetwork'
+        'New-VergeNetworkAlias'
+        'New-VergeNetworkHost'
+        'New-VergeNetworkRule'
+        'Remove-VergeNetwork'
+        'Remove-VergeNetworkAlias'
+        'Remove-VergeNetworkHost'
+        'Remove-VergeNetworkRule'
+        'Restart-VergeNetwork'
+        'Set-VergeNetwork'
+        'Set-VergeNetworkHost'
+        'Set-VergeNetworkRule'
+        'Start-VergeNetwork'
+        'Stop-VergeNetwork'
+
+        # DNS
+        'Get-VergeDNSRecord'
+        'Get-VergeDNSZone'
+        'New-VergeDNSRecord'
+        'Remove-VergeDNSRecord'
+
+        # Network Diagnostics
+        'Get-VergeNetworkDiagnostics'
+        'Get-VergeNetworkStatistics'
+
+        # IPSec VPN
+        'Get-VergeIPSecConnection'
+        'Get-VergeIPSecPolicy'
+        'New-VergeIPSecConnection'
+        'New-VergeIPSecPolicy'
+        'Remove-VergeIPSecConnection'
+        'Remove-VergeIPSecPolicy'
+        'Set-VergeIPSecConnection'
+
+        # WireGuard VPN
+        'Get-VergeWireGuard'
+        'Get-VergeWireGuardPeer'
+        'New-VergeWireGuard'
+        'New-VergeWireGuardPeer'
+        'Remove-VergeWireGuard'
+        'Remove-VergeWireGuardPeer'
+        'Set-VergeWireGuard'
     )
 
     # Cmdlets to export from this module
