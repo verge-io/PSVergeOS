@@ -150,6 +150,14 @@
         'New-VergeNASCIFSShare'
         'Remove-VergeNASCIFSShare'
 
+        # NAS Local Users
+        'Get-VergeNASUser'
+        'New-VergeNASUser'
+        'Set-VergeNASUser'
+        'Remove-VergeNASUser'
+        'Enable-VergeNASUser'
+        'Disable-VergeNASUser'
+
         # Users
         'Get-VergeUser'
         'New-VergeUser'
