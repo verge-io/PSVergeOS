@@ -35,10 +35,10 @@ Import-Module PSVergeOS -ErrorAction Stop
 
 # Network Configuration
 $NetworkName        = "Lab-Internal"              # Name for the new network
-$NetworkAddress     = "10.100.0.0/24"             # Network CIDR
-$NetworkGateway     = "10.100.0.1"                # Gateway IP (network router)
-$DHCPRangeStart     = "10.100.0.100"              # DHCP pool start
-$DHCPRangeStop      = "10.100.0.200"              # DHCP pool end
+$NetworkAddress     = "192.168.100.0/24"          # Network CIDR
+$NetworkGateway     = "192.168.100.1"             # Gateway IP (network router)
+$DHCPRangeStart     = "192.168.100.100"           # DHCP pool start
+$DHCPRangeStop      = "192.168.100.200"           # DHCP pool end
 $UplinkNetwork      = "External"                  # Route traffic through this network
 
 # VM Configuration
