@@ -148,7 +148,14 @@
         # NAS CIFS Shares
         'Get-VergeNASCIFSShare'
         'New-VergeNASCIFSShare'
+        'Set-VergeNASCIFSShare'
         'Remove-VergeNASCIFSShare'
+
+        # NAS NFS Shares
+        'Get-VergeNASNFSShare'
+        'New-VergeNASNFSShare'
+        'Set-VergeNASNFSShare'
+        'Remove-VergeNASNFSShare'
 
         # NAS Local Users
         'Get-VergeNASUser'
