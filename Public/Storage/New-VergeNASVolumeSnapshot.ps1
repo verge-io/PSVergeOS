@@ -1,10 +1,10 @@
-function New-VergeVolumeSnapshot {
+function New-VergeNASVolumeSnapshot {
     <#
     .SYNOPSIS
         Creates a snapshot of a NAS volume in VergeOS.
 
     .DESCRIPTION
-        New-VergeVolumeSnapshot creates a point-in-time snapshot of a NAS volume.
+        New-VergeNASVolumeSnapshot creates a point-in-time snapshot of a NAS volume.
         Snapshots can be used for backup purposes or to restore the volume to
         a previous state.
 
@@ -32,23 +32,23 @@ function New-VergeVolumeSnapshot {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        New-VergeVolumeSnapshot -Volume "FileShare" -Name "Pre-Update"
+        New-VergeNASVolumeSnapshot -Volume "FileShare" -Name "Pre-Update"
 
         Creates a snapshot named "Pre-Update" for the FileShare volume.
 
     .EXAMPLE
-        New-VergeVolumeSnapshot -Volume "FileShare" -Name "Daily-$(Get-Date -Format 'yyyyMMdd')"
+        New-VergeNASVolumeSnapshot -Volume "FileShare" -Name "Daily-$(Get-Date -Format 'yyyyMMdd')"
 
         Creates a daily snapshot with today's date in the name.
 
     .EXAMPLE
-        New-VergeVolumeSnapshot -Volume "Database" -Name "Before-Migration" -Quiesce -NeverExpires
+        New-VergeNASVolumeSnapshot -Volume "Database" -Name "Before-Migration" -Quiesce -NeverExpires
 
         Creates a quiesced, permanent snapshot.
 
     .EXAMPLE
-        Get-VergeVolume -Name "Prod-*" | ForEach-Object {
-            New-VergeVolumeSnapshot -Volume $_ -Name "Backup-$(Get-Date -Format 'yyyyMMdd')"
+        Get-VergeNASVolume -Name "Prod-*" | ForEach-Object {
+            New-VergeNASVolumeSnapshot -Volume $_ -Name "Backup-$(Get-Date -Format 'yyyyMMdd')"
         }
 
         Creates snapshots for all production volumes.
@@ -109,7 +109,7 @@ function New-VergeVolumeSnapshot {
 
             if ($Volume -is [string]) {
                 $volumeName = $Volume
-                $volumeData = Get-VergeVolume -Name $Volume -Server $Server
+                $volumeData = Get-VergeNASVolume -Name $Volume -Server $Server
                 if (-not $volumeData) {
                     throw "Volume '$Volume' not found"
                 }
@@ -162,11 +162,11 @@ function New-VergeVolumeSnapshot {
 
                 # Return the created snapshot
                 if ($response.'$key') {
-                    Get-VergeVolumeSnapshot -Key $response.'$key' -Server $Server
+                    Get-VergeNASVolumeSnapshot -Key $response.'$key' -Server $Server
                 }
                 else {
                     # Try to find by name
-                    Get-VergeVolumeSnapshot -Volume $volumeKey -Name $Name -Server $Server
+                    Get-VergeNASVolumeSnapshot -Volume $volumeKey -Name $Name -Server $Server
                 }
             }
         }

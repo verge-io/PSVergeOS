@@ -1,10 +1,10 @@
-function Set-VergeVolume {
+function Set-VergeNASVolume {
     <#
     .SYNOPSIS
         Modifies an existing NAS volume in VergeOS.
 
     .DESCRIPTION
-        Set-VergeVolume modifies the configuration of an existing NAS volume.
+        Set-VergeNASVolume modifies the configuration of an existing NAS volume.
         You can change the description, size, tier, and other settings.
 
     .PARAMETER Name
@@ -14,7 +14,7 @@ function Set-VergeVolume {
         The unique key (ID) of the volume to modify.
 
     .PARAMETER Volume
-        A volume object from Get-VergeVolume.
+        A volume object from Get-VergeNASVolume.
 
     .PARAMETER Description
         New description for the volume.
@@ -47,17 +47,17 @@ function Set-VergeVolume {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Set-VergeVolume -Name "FileShare" -SizeGB 1000
+        Set-VergeNASVolume -Name "FileShare" -SizeGB 1000
 
         Increases the FileShare volume to 1TB.
 
     .EXAMPLE
-        Get-VergeVolume -Name "Archive" | Set-VergeVolume -Tier 3
+        Get-VergeNASVolume -Name "Archive" | Set-VergeNASVolume -Tier 3
 
         Changes the Archive volume to tier 3 storage.
 
     .EXAMPLE
-        Set-VergeVolume -Name "OldData" -Enabled $false
+        Set-VergeNASVolume -Name "OldData" -Enabled $false
 
         Disables a volume.
 
@@ -77,7 +77,7 @@ function Set-VergeVolume {
         [string]$Key,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByObject')]
-        [PSTypeName('Verge.Volume')]
+        [PSTypeName('Verge.NASVolume')]
         [PSCustomObject]$Volume,
 
         [Parameter()]
@@ -139,7 +139,7 @@ function Set-VergeVolume {
                 }
                 'ByName' {
                     $volumeName = $Name
-                    $existingVolume = Get-VergeVolume -Name $Name -Server $Server
+                    $existingVolume = Get-VergeNASVolume -Name $Name -Server $Server
                     if (-not $existingVolume) {
                         throw "Volume '$Name' not found"
                     }
@@ -214,7 +214,7 @@ function Set-VergeVolume {
                 $null = Invoke-VergeAPI -Method PUT -Endpoint "volumes/$volumeKey" -Body $body -Connection $Server
 
                 # Return the updated volume
-                Get-VergeVolume -Key $volumeKey -Server $Server
+                Get-VergeNASVolume -Key $volumeKey -Server $Server
             }
         }
         catch {

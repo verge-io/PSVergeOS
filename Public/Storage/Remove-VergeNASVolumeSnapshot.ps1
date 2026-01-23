@@ -1,17 +1,17 @@
-function Remove-VergeVolumeSnapshot {
+function Remove-VergeNASVolumeSnapshot {
     <#
     .SYNOPSIS
         Removes a volume snapshot from VergeOS.
 
     .DESCRIPTION
-        Remove-VergeVolumeSnapshot deletes a snapshot of a NAS volume.
+        Remove-VergeNASVolumeSnapshot deletes a snapshot of a NAS volume.
         This operation cannot be undone.
 
     .PARAMETER Key
         The unique key of the snapshot to remove.
 
     .PARAMETER Snapshot
-        A snapshot object from Get-VergeVolumeSnapshot.
+        A snapshot object from Get-VergeNASVolumeSnapshot.
 
     .PARAMETER Volume
         The volume name or object, combined with -Name to identify the snapshot.
@@ -26,17 +26,17 @@ function Remove-VergeVolumeSnapshot {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Remove-VergeVolumeSnapshot -Volume "FileShare" -Name "OldSnapshot"
+        Remove-VergeNASVolumeSnapshot -Volume "FileShare" -Name "OldSnapshot"
 
         Removes a specific snapshot by volume and name.
 
     .EXAMPLE
-        Get-VergeVolumeSnapshot -Volume "FileShare" | Where-Object { $_.Created -lt (Get-Date).AddDays(-30) } | Remove-VergeVolumeSnapshot -Force
+        Get-VergeNASVolumeSnapshot -Volume "FileShare" | Where-Object { $_.Created -lt (Get-Date).AddDays(-30) } | Remove-VergeNASVolumeSnapshot -Force
 
         Removes all snapshots older than 30 days.
 
     .EXAMPLE
-        Remove-VergeVolumeSnapshot -Key 123 -Force
+        Remove-VergeNASVolumeSnapshot -Key 123 -Force
 
         Removes a snapshot by key without confirmation.
 
@@ -50,7 +50,7 @@ function Remove-VergeVolumeSnapshot {
         [int]$Key,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByObject')]
-        [PSTypeName('Verge.VolumeSnapshot')]
+        [PSTypeName('Verge.NASVolumeSnapshot')]
         [PSCustomObject]$Snapshot,
 
         [Parameter(Mandatory, Position = 0, ParameterSetName = 'ByVolumeAndName')]
@@ -92,7 +92,7 @@ function Remove-VergeVolumeSnapshot {
                     $snapshotName = $Snapshot.Name
                 }
                 'ByVolumeAndName' {
-                    $snapshotData = Get-VergeVolumeSnapshot -Volume $Volume -Name $Name -Server $Server
+                    $snapshotData = Get-VergeNASVolumeSnapshot -Volume $Volume -Name $Name -Server $Server
                     if (-not $snapshotData) {
                         throw "Snapshot '$Name' not found for volume '$Volume'"
                     }

@@ -1,10 +1,10 @@
-function Remove-VergeVolume {
+function Remove-VergeNASVolume {
     <#
     .SYNOPSIS
         Removes a NAS volume from VergeOS.
 
     .DESCRIPTION
-        Remove-VergeVolume deletes a NAS volume from the VergeOS system.
+        Remove-VergeNASVolume deletes a NAS volume from the VergeOS system.
         This operation is destructive and cannot be undone. All data on
         the volume will be permanently deleted.
 
@@ -15,7 +15,7 @@ function Remove-VergeVolume {
         The unique key (ID) of the volume to remove.
 
     .PARAMETER Volume
-        A volume object from Get-VergeVolume.
+        A volume object from Get-VergeNASVolume.
 
     .PARAMETER Force
         Bypasses the confirmation prompt.
@@ -24,17 +24,17 @@ function Remove-VergeVolume {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Remove-VergeVolume -Name "TempData"
+        Remove-VergeNASVolume -Name "TempData"
 
         Removes the TempData volume after confirmation.
 
     .EXAMPLE
-        Remove-VergeVolume -Name "TempData" -Force
+        Remove-VergeNASVolume -Name "TempData" -Force
 
         Removes the TempData volume without confirmation.
 
     .EXAMPLE
-        Get-VergeVolume -Name "Test-*" | Remove-VergeVolume -Force
+        Get-VergeNASVolume -Name "Test-*" | Remove-VergeNASVolume -Force
 
         Removes all volumes starting with "Test-" without confirmation.
 
@@ -52,7 +52,7 @@ function Remove-VergeVolume {
         [string]$Key,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByObject')]
-        [PSTypeName('Verge.Volume')]
+        [PSTypeName('Verge.NASVolume')]
         [PSCustomObject]$Volume,
 
         [Parameter()]
@@ -86,7 +86,7 @@ function Remove-VergeVolume {
                 }
                 'ByName' {
                     $volumeName = $Name
-                    $existingVolume = Get-VergeVolume -Name $Name -Server $Server
+                    $existingVolume = Get-VergeNASVolume -Name $Name -Server $Server
                     if (-not $existingVolume) {
                         throw "Volume '$Name' not found"
                     }

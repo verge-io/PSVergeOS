@@ -1,10 +1,10 @@
-function New-VergeVolume {
+function New-VergeNASVolume {
     <#
     .SYNOPSIS
         Creates a new NAS volume in VergeOS.
 
     .DESCRIPTION
-        New-VergeVolume creates a new NAS volume on a specified NAS service.
+        New-VergeNASVolume creates a new NAS volume on a specified NAS service.
         Volumes are virtual filesystems that can be shared via CIFS/SMB or NFS.
 
     .PARAMETER Name
@@ -41,17 +41,17 @@ function New-VergeVolume {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        New-VergeVolume -Name "FileShare" -NASService "nas01" -SizeGB 500
+        New-VergeNASVolume -Name "FileShare" -NASService "nas01" -SizeGB 500
 
         Creates a 500GB volume named FileShare on the nas01 service.
 
     .EXAMPLE
-        New-VergeVolume -Name "Archive" -NASService "nas01" -SizeGB 2000 -Tier 3
+        New-VergeNASVolume -Name "Archive" -NASService "nas01" -SizeGB 2000 -Tier 3
 
         Creates a 2TB volume on storage tier 3.
 
     .EXAMPLE
-        New-VergeVolume -Name "ReadOnlyData" -NASService "nas01" -SizeGB 100 -ReadOnly
+        New-VergeNASVolume -Name "ReadOnlyData" -NASService "nas01" -SizeGB 100 -ReadOnly
 
         Creates a read-only volume.
 
@@ -196,11 +196,11 @@ function New-VergeVolume {
                 # Return the created volume
                 if ($response.'$key' -or $response.id) {
                     $volumeKey = $response.'$key' ?? $response.id
-                    Get-VergeVolume -Key $volumeKey -Server $Server
+                    Get-VergeNASVolume -Key $volumeKey -Server $Server
                 }
                 else {
                     Write-Verbose "Volume created, fetching by name"
-                    Get-VergeVolume -Name $Name -Server $Server
+                    Get-VergeNASVolume -Name $Name -Server $Server
                 }
             }
         }

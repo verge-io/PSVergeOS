@@ -1,17 +1,17 @@
-function Remove-VergeCIFSShare {
+function Remove-VergeNASCIFSShare {
     <#
     .SYNOPSIS
         Removes a CIFS/SMB share from VergeOS.
 
     .DESCRIPTION
-        Remove-VergeCIFSShare deletes a CIFS (SMB) file share from a volume.
+        Remove-VergeNASCIFSShare deletes a CIFS (SMB) file share from a volume.
         This does not delete the underlying data on the volume.
 
     .PARAMETER Key
         The unique key of the share to remove.
 
     .PARAMETER Share
-        A share object from Get-VergeCIFSShare.
+        A share object from Get-VergeNASCIFSShare.
 
     .PARAMETER Volume
         The volume name or object, combined with -Name to identify the share.
@@ -26,12 +26,12 @@ function Remove-VergeCIFSShare {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Remove-VergeCIFSShare -Volume "FileShare" -Name "old-share"
+        Remove-VergeNASCIFSShare -Volume "FileShare" -Name "old-share"
 
         Removes a CIFS share by volume and name.
 
     .EXAMPLE
-        Get-VergeCIFSShare -Volume "FileShare" | Remove-VergeCIFSShare -Force
+        Get-VergeNASCIFSShare -Volume "FileShare" | Remove-VergeNASCIFSShare -Force
 
         Removes all CIFS shares from a volume.
 
@@ -44,7 +44,7 @@ function Remove-VergeCIFSShare {
         [string]$Key,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByObject')]
-        [PSTypeName('Verge.CIFSShare')]
+        [PSTypeName('Verge.NASCIFSShare')]
         [PSCustomObject]$Share,
 
         [Parameter(Mandatory, Position = 0, ParameterSetName = 'ByVolumeAndName')]
@@ -86,7 +86,7 @@ function Remove-VergeCIFSShare {
                     $shareName = $Share.Name
                 }
                 'ByVolumeAndName' {
-                    $shareData = Get-VergeCIFSShare -Volume $Volume -Name $Name -Server $Server
+                    $shareData = Get-VergeNASCIFSShare -Volume $Volume -Name $Name -Server $Server
                     if (-not $shareData) {
                         throw "CIFS share '$Name' not found on volume '$Volume'"
                     }

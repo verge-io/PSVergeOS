@@ -1,10 +1,10 @@
-function Get-VergeVolume {
+function Get-VergeNASVolume {
     <#
     .SYNOPSIS
         Retrieves NAS volumes from VergeOS.
 
     .DESCRIPTION
-        Get-VergeVolume retrieves one or more NAS volumes from a VergeOS system.
+        Get-VergeNASVolume retrieves one or more NAS volumes from a VergeOS system.
         Volumes are virtual filesystems that can be shared via CIFS/SMB or NFS.
         You can filter volumes by name, filesystem type, or enabled state.
 
@@ -26,27 +26,27 @@ function Get-VergeVolume {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Get-VergeVolume
+        Get-VergeNASVolume
 
         Lists all NAS volumes.
 
     .EXAMPLE
-        Get-VergeVolume -Name "FileShare"
+        Get-VergeNASVolume -Name "FileShare"
 
         Gets a specific volume by name.
 
     .EXAMPLE
-        Get-VergeVolume -Name "NAS-*"
+        Get-VergeNASVolume -Name "NAS-*"
 
         Gets all volumes whose names start with "NAS-".
 
     .EXAMPLE
-        Get-VergeVolume -Enabled $true
+        Get-VergeNASVolume -Enabled $true
 
         Gets all enabled volumes.
 
     .EXAMPLE
-        Get-VergeVolume | Select-Object Name, MaxSizeGB, Tier, Enabled
+        Get-VergeNASVolume | Select-Object Name, MaxSizeGB, Tier, Enabled
 
         Lists volumes with specific properties.
 
@@ -230,7 +230,7 @@ function Get-VergeVolume {
                 }
 
                 [PSCustomObject]@{
-                    PSTypeName           = 'Verge.Volume'
+                    PSTypeName = 'Verge.NASVolume'
                     Key                  = $volume.'$key'
                     Id                   = $volume.id
                     Name                 = $volume.name

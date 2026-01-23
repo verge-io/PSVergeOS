@@ -1,10 +1,10 @@
-function New-VergeCIFSShare {
+function New-VergeNASCIFSShare {
     <#
     .SYNOPSIS
         Creates a new CIFS/SMB share on a VergeOS volume.
 
     .DESCRIPTION
-        New-VergeCIFSShare creates a CIFS (SMB) file share on a NAS volume.
+        New-VergeNASCIFSShare creates a CIFS (SMB) file share on a NAS volume.
         The share can be accessed from Windows and other SMB clients.
 
     .PARAMETER Volume
@@ -44,17 +44,17 @@ function New-VergeCIFSShare {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        New-VergeCIFSShare -Volume "FileShare" -Name "shared"
+        New-VergeNASCIFSShare -Volume "FileShare" -Name "shared"
 
         Creates a CIFS share named "shared" sharing the entire FileShare volume.
 
     .EXAMPLE
-        New-VergeCIFSShare -Volume "FileShare" -Name "public" -SharePath "/public" -GuestOK
+        New-VergeNASCIFSShare -Volume "FileShare" -Name "public" -SharePath "/public" -GuestOK
 
         Creates a guest-accessible share for a specific path.
 
     .EXAMPLE
-        New-VergeCIFSShare -Volume "FileShare" -Name "secure" -ValidUsers @("admin", "manager")
+        New-VergeNASCIFSShare -Volume "FileShare" -Name "secure" -ValidUsers @("admin", "manager")
 
         Creates a share accessible only to specific users.
 
@@ -128,7 +128,7 @@ function New-VergeCIFSShare {
 
             if ($Volume -is [string]) {
                 $volumeName = $Volume
-                $volumeData = Get-VergeVolume -Name $Volume -Server $Server
+                $volumeData = Get-VergeNASVolume -Name $Volume -Server $Server
                 if (-not $volumeData) {
                     throw "Volume '$Volume' not found"
                 }
@@ -195,10 +195,10 @@ function New-VergeCIFSShare {
                 # Return the created share
                 if ($response.'$key' -or $response.id) {
                     $shareKey = $response.'$key' ?? $response.id
-                    Get-VergeCIFSShare -Key $shareKey -Server $Server
+                    Get-VergeNASCIFSShare -Key $shareKey -Server $Server
                 }
                 else {
-                    Get-VergeCIFSShare -Volume $volumeKey -Name $Name -Server $Server
+                    Get-VergeNASCIFSShare -Volume $volumeKey -Name $Name -Server $Server
                 }
             }
         }

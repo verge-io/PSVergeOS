@@ -1,10 +1,10 @@
-function Get-VergeCIFSShare {
+function Get-VergeNASCIFSShare {
     <#
     .SYNOPSIS
         Retrieves CIFS/SMB shares from VergeOS.
 
     .DESCRIPTION
-        Get-VergeCIFSShare retrieves CIFS (SMB) file shares from a VergeOS system.
+        Get-VergeNASCIFSShare retrieves CIFS (SMB) file shares from a VergeOS system.
         You can filter by volume, share name, or retrieve all shares.
 
     .PARAMETER Volume
@@ -20,17 +20,17 @@ function Get-VergeCIFSShare {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Get-VergeCIFSShare
+        Get-VergeNASCIFSShare
 
         Lists all CIFS shares.
 
     .EXAMPLE
-        Get-VergeCIFSShare -Volume "FileShare"
+        Get-VergeNASCIFSShare -Volume "FileShare"
 
         Lists CIFS shares on the FileShare volume.
 
     .EXAMPLE
-        Get-VergeVolume | Get-VergeCIFSShare
+        Get-VergeNASVolume | Get-VergeNASCIFSShare
 
         Lists all CIFS shares for all volumes.
 
@@ -91,7 +91,7 @@ function Get-VergeCIFSShare {
                 if ($Volume) {
                     $volumeKey = $null
                     if ($Volume -is [string]) {
-                        $volumeData = Get-VergeVolume -Name $Volume -Server $Server
+                        $volumeData = Get-VergeNASVolume -Name $Volume -Server $Server
                         if (-not $volumeData) {
                             throw "Volume '$Volume' not found"
                         }
@@ -187,7 +187,7 @@ function Get-VergeCIFSShare {
                 $deniedHosts = if ($share.host_deny) { $share.host_deny -split '\n' | Where-Object { $_ } } else { @() }
 
                 [PSCustomObject]@{
-                    PSTypeName        = 'Verge.CIFSShare'
+                    PSTypeName = 'Verge.NASCIFSShare'
                     Key               = $share.'$key' ?? $share.id
                     Id                = $share.id
                     Name              = $share.name

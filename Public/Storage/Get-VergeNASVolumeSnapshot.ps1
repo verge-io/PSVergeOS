@@ -1,10 +1,10 @@
-function Get-VergeVolumeSnapshot {
+function Get-VergeNASVolumeSnapshot {
     <#
     .SYNOPSIS
         Retrieves volume snapshots from VergeOS.
 
     .DESCRIPTION
-        Get-VergeVolumeSnapshot retrieves snapshots of NAS volumes from VergeOS.
+        Get-VergeNASVolumeSnapshot retrieves snapshots of NAS volumes from VergeOS.
         You can filter by volume name, snapshot name, or retrieve all snapshots.
 
     .PARAMETER Volume
@@ -20,17 +20,17 @@ function Get-VergeVolumeSnapshot {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Get-VergeVolumeSnapshot -Volume "FileShare"
+        Get-VergeNASVolumeSnapshot -Volume "FileShare"
 
         Lists all snapshots for the FileShare volume.
 
     .EXAMPLE
-        Get-VergeVolumeSnapshot -Volume "FileShare" -Name "Daily-*"
+        Get-VergeNASVolumeSnapshot -Volume "FileShare" -Name "Daily-*"
 
         Lists daily snapshots for the FileShare volume.
 
     .EXAMPLE
-        Get-VergeVolume | Get-VergeVolumeSnapshot
+        Get-VergeNASVolume | Get-VergeNASVolumeSnapshot
 
         Lists all snapshots for all volumes.
 
@@ -92,7 +92,7 @@ function Get-VergeVolumeSnapshot {
                     $volumeKey = $null
                     if ($Volume -is [string]) {
                         # Look up volume by name
-                        $volumeData = Get-VergeVolume -Name $Volume -Server $Server
+                        $volumeData = Get-VergeNASVolume -Name $Volume -Server $Server
                         if (-not $volumeData) {
                             throw "Volume '$Volume' not found"
                         }
@@ -166,7 +166,7 @@ function Get-VergeVolumeSnapshot {
                 }
 
                 [PSCustomObject]@{
-                    PSTypeName       = 'Verge.VolumeSnapshot'
+                    PSTypeName = 'Verge.NASVolumeSnapshot'
                     Key              = $snapshot.'$key'
                     Name             = $snapshot.name
                     Description      = $snapshot.description

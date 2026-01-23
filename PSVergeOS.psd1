@@ -126,17 +126,29 @@
         'Remove-VergeWireGuardPeer'
         'Set-VergeWireGuard'
 
-        # Storage - Volumes
-        'Get-VergeVolume'
-        'New-VergeVolume'
-        'Set-VergeVolume'
-        'Remove-VergeVolume'
-        'Get-VergeVolumeSnapshot'
-        'New-VergeVolumeSnapshot'
-        'Remove-VergeVolumeSnapshot'
-        'Get-VergeCIFSShare'
-        'New-VergeCIFSShare'
-        'Remove-VergeCIFSShare'
+        # NAS Services
+        'Get-VergeNASService'
+        'New-VergeNASService'
+        'Set-VergeNASService'
+        'Remove-VergeNASService'
+        'Get-VergeNASCIFSSettings'
+        'Set-VergeNASCIFSSettings'
+        'Get-VergeNASNFSSettings'
+        'Set-VergeNASNFSSettings'
+
+        # NAS Volumes
+        'Get-VergeNASVolume'
+        'New-VergeNASVolume'
+        'Set-VergeNASVolume'
+        'Remove-VergeNASVolume'
+        'Get-VergeNASVolumeSnapshot'
+        'New-VergeNASVolumeSnapshot'
+        'Remove-VergeNASVolumeSnapshot'
+
+        # NAS CIFS Shares
+        'Get-VergeNASCIFSShare'
+        'New-VergeNASCIFSShare'
+        'Remove-VergeNASCIFSShare'
 
         # Users
         'Get-VergeUser'
