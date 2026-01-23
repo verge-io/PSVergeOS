@@ -71,6 +71,11 @@
 
         # Storage/Files
         'Get-VergeFile'
+        'Get-VergeStorageTier'
+        'Get-VergevSANStatus'
+        'Remove-VergeFile'
+        'Save-VergeFile'
+        'Send-VergeFile'
 
         # Network
         'Get-VergeNetwork'
