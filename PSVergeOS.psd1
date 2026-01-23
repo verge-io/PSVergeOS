@@ -204,6 +204,22 @@
         'New-VergeTenantLayer2Network'
         'Set-VergeTenantLayer2Network'
         'Remove-VergeTenantLayer2Network'
+
+        # System
+        'Get-VergeVersion'
+        'Get-VergeCluster'
+        'New-VergeCluster'
+        'Set-VergeCluster'
+        'Remove-VergeCluster'
+        'Get-VergeNode'
+        'Enable-VergeNodeMaintenance'
+        'Disable-VergeNodeMaintenance'
+        'Restart-VergeNode'
+        'Get-VergeSystemStatistics'
+        'Get-VergeSystemSetting'
+        'Get-VergeLicense'
+        'Get-VergeNodeDriver'
+        'Get-VergeNodeDevice'
     )
 
     # Cmdlets to export from this module
