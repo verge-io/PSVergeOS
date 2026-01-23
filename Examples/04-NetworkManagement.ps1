@@ -178,35 +178,39 @@ Get-VergeNetworkRule -Network "External" -Direction Incoming
 # Create a rule to allow HTTPS traffic
 New-VergeNetworkRule `
     -Network "External" `
-    -Description "Allow HTTPS" `
+    -Name "Allow-HTTPS" `
+    -Description "Allow HTTPS traffic" `
     -Action Accept `
     -Direction Incoming `
     -Protocol TCP `
-    -DestinationPort 443
+    -DestinationPorts "443"
 
 # Create a rule to allow SSH from specific IP
 New-VergeNetworkRule `
     -Network "External" `
-    -Description "Allow SSH from Admin" `
+    -Name "Allow-SSH-Admin" `
+    -Description "Allow SSH from Admin workstation" `
     -Action Accept `
     -Direction Incoming `
     -Protocol TCP `
     -SourceIP "10.0.0.50" `
-    -DestinationPort 22
+    -DestinationPorts "22"
 
 # Create a rule to allow a port range
 New-VergeNetworkRule `
     -Network "External" `
+    -Name "Allow-App-Ports" `
     -Description "Allow custom app ports" `
     -Action Accept `
     -Direction Incoming `
     -Protocol TCP `
-    -DestinationPort "8000-8100"
+    -DestinationPorts "8000-8100"
 
 # Create a rule to allow ICMP (ping)
 New-VergeNetworkRule `
     -Network "External" `
-    -Description "Allow ping" `
+    -Name "Allow-Ping" `
+    -Description "Allow ICMP ping" `
     -Action Accept `
     -Direction Incoming `
     -Protocol ICMP
@@ -214,11 +218,12 @@ New-VergeNetworkRule `
 # Create a deny rule (for explicit blocking)
 New-VergeNetworkRule `
     -Network "External" `
-    -Description "Block Telnet" `
+    -Name "Block-Telnet" `
+    -Description "Block Telnet access" `
     -Action Reject `
     -Direction Incoming `
     -Protocol TCP `
-    -DestinationPort 23
+    -DestinationPorts "23"
 
 # Modify an existing rule
 Set-VergeNetworkRule -Key 123 -Description "Updated rule description"
@@ -289,12 +294,13 @@ New-VergeNetworkAlias `
 # Use alias in a firewall rule
 New-VergeNetworkRule `
     -Network "External" `
-    -Description "Allow SSH from admins" `
+    -Name "Allow-SSH-Admins" `
+    -Description "Allow SSH from admin workstations" `
     -Action Accept `
     -Direction Incoming `
     -Protocol TCP `
-    -SourceAlias "Admin-Workstations" `
-    -DestinationPort 22
+    -SourceIP "alias:Admin-Workstations" `
+    -DestinationPorts "22"
 
 # Remove an alias
 Remove-VergeNetworkAlias -Network "External" -Name "Old-Alias"
@@ -345,16 +351,17 @@ $webNet = New-VergeNetwork `
 
 # 2. Add firewall rules
 @(
-    @{ Desc = "Allow HTTP";  Port = 80 }
-    @{ Desc = "Allow HTTPS"; Port = 443 }
+    @{ Name = "Allow-HTTP";  Desc = "Allow HTTP traffic";  Port = "80" }
+    @{ Name = "Allow-HTTPS"; Desc = "Allow HTTPS traffic"; Port = "443" }
 ) | ForEach-Object {
     New-VergeNetworkRule `
         -Network $webNetworkName `
+        -Name $_.Name `
         -Description $_.Desc `
         -Action Accept `
         -Direction Incoming `
         -Protocol TCP `
-        -DestinationPort $_.Port
+        -DestinationPorts $_.Port
 }
 
 # 3. Apply rules and start network

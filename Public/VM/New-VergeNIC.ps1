@@ -149,10 +149,19 @@ function New-VergeNIC {
         }
         elseif ($NetworkName) {
             try {
-                $networks = Invoke-VergeAPI -Method GET -Endpoint "vnets?name=$NetworkName" -Connection $Server
+                $networks = Invoke-VergeAPI -Method GET -Endpoint 'vnets' -Query @{
+                    filter = "name eq '$NetworkName'"
+                    fields = '$key,name'
+                } -Connection $Server
+
                 if ($networks -and $networks.Count -gt 0) {
                     $net = $networks | Select-Object -First 1
                     $resolvedNetworkKey = $net.'$key' ?? $net.key
+                    Write-Verbose "Resolved network '$NetworkName' to key $resolvedNetworkKey"
+                }
+                elseif ($networks -and $networks.'$key') {
+                    # Single object response
+                    $resolvedNetworkKey = $networks.'$key'
                     Write-Verbose "Resolved network '$NetworkName' to key $resolvedNetworkKey"
                 }
                 else {
