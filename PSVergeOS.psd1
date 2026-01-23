@@ -258,6 +258,19 @@
         'Get-VergeLicense'
         'Get-VergeNodeDriver'
         'Get-VergeNodeDevice'
+
+        # Tasks/Monitoring
+        'Get-VergeTask'
+        'Wait-VergeTask'
+        'Stop-VergeTask'
+        'Enable-VergeTask'
+
+        # Alarms
+        'Get-VergeAlarm'
+        'Set-VergeAlarm'
+
+        # Logs
+        'Get-VergeLog'
     )
 
     # Cmdlets to export from this module
