@@ -6,7 +6,7 @@
     RootModule = 'PSVergeOS.psm1'
 
     # Version number of this module
-    ModuleVersion = '1.0.0'
+    ModuleVersion = '1.0.1'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core')
@@ -331,7 +331,7 @@
             Readme = 'README.md'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Initial stable release. Full VergeOS API coverage for VM lifecycle, networking, storage, NAS, tenants, backup/DR, and monitoring.'
+            ReleaseNotes = 'Updated module manifest metadata and added GitHub Actions CI/CD workflow for automated PowerShell Gallery publishing.'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
