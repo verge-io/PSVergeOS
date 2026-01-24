@@ -19,7 +19,8 @@ function Get-VergeInventory {
         - Nodes: Physical nodes with hardware details
         - Clusters: Cluster configuration and resource utilization
         - Tenants: Multi-tenant environments
-        - Snapshots: VM and tenant snapshots
+        - VMSnapshots: Individual VM and tenant point-in-time snapshots
+        - CloudSnapshots: System-wide cloud snapshots (with immutability status)
         - NAS: NAS services, volumes, and shares
         - All: All resource types (default)
 
@@ -86,7 +87,8 @@ function Get-VergeInventory {
         - Nodes: Array of node objects
         - Clusters: Array of cluster objects
         - Tenants: Array of tenant objects
-        - Snapshots: Array of snapshot objects (VMs and tenants)
+        - VMSnapshots: Array of VM/tenant snapshot objects
+        - CloudSnapshots: Array of cloud snapshot objects (with immutability info)
         - NAS: Array of NAS service/volume objects
         - Summary: Object with counts per resource type
         - GeneratedAt: Timestamp of inventory generation
@@ -102,7 +104,7 @@ function Get-VergeInventory {
     [OutputType([PSCustomObject])]
     param(
         [Parameter(Position = 0)]
-        [ValidateSet('All', 'VMs', 'Networks', 'Storage', 'Nodes', 'Clusters', 'Tenants', 'Snapshots', 'NAS')]
+        [ValidateSet('All', 'VMs', 'Networks', 'Storage', 'Nodes', 'Clusters', 'Tenants', 'VMSnapshots', 'CloudSnapshots', 'NAS')]
         [string[]]$ResourceType = @('All'),
 
         [Parameter()]
@@ -140,7 +142,8 @@ function Get-VergeInventory {
         $collectNodes = $collectAll -or $ResourceType -contains 'Nodes'
         $collectClusters = $collectAll -or $ResourceType -contains 'Clusters'
         $collectTenants = $collectAll -or $ResourceType -contains 'Tenants'
-        $collectSnapshots = $collectAll -or $ResourceType -contains 'Snapshots'
+        $collectVMSnapshots = $collectAll -or $ResourceType -contains 'VMSnapshots'
+        $collectCloudSnapshots = $collectAll -or $ResourceType -contains 'CloudSnapshots'
         $collectNAS = $collectAll -or $ResourceType -contains 'NAS'
     }
 
@@ -150,18 +153,19 @@ function Get-VergeInventory {
 
             # Initialize inventory object
             $inventory = [PSCustomObject]@{
-                PSTypeName  = 'Verge.Inventory'
-                Server      = $Server.Server
-                GeneratedAt = Get-Date
-                VMs         = @()
-                Networks    = @()
-                Storage     = @()
-                Nodes       = @()
-                Clusters    = @()
-                Tenants     = @()
-                Snapshots   = @()
-                NAS         = @()
-                Summary     = $null
+                PSTypeName     = 'Verge.Inventory'
+                Server         = $Server.Server
+                GeneratedAt    = Get-Date
+                VMs            = @()
+                Networks       = @()
+                Storage        = @()
+                Nodes          = @()
+                Clusters       = @()
+                Tenants        = @()
+                VMSnapshots    = @()
+                CloudSnapshots = @()
+                NAS            = @()
+                Summary        = $null
             }
 
             # Collect VMs
@@ -342,58 +346,98 @@ function Get-VergeInventory {
                 }
             }
 
-            # Collect Snapshots
-            if ($collectSnapshots) {
-                Write-Verbose "Collecting snapshot inventory..."
-                $snapshots = @()
+            # Collect VM Snapshots (individual VM point-in-time snapshots - manually created only)
+            if ($collectVMSnapshots) {
+                Write-Verbose "Collecting VM snapshot inventory..."
+                $vmSnapshotList = @()
 
                 # VM Snapshots - need to iterate over VMs
-                $allVMs = if ($collectVMs -and $inventory.VMs.Count -gt 0) {
-                    # Reuse VMs already collected
-                    Get-VergeVM -Server $Server -IncludeSnapshots:$false
-                } else {
-                    Get-VergeVM -Server $Server -IncludeSnapshots:$false
-                }
+                # Only include manually created snapshots (not those created by cloud snapshot profiles)
+                $allVMs = Get-VergeVM -Server $Server -IncludeSnapshots:$false
 
                 foreach ($vm in $allVMs) {
                     $vmSnapshots = Get-VergeVMSnapshot -VM $vm -Server $Server -ErrorAction SilentlyContinue
                     foreach ($snap in $vmSnapshots) {
-                        $snapshots += [PSCustomObject]@{
-                            PSTypeName     = 'Verge.Inventory.Snapshot'
-                            Type           = 'VM'
-                            Key            = $snap.Key
-                            Name           = $snap.Name
-                            Description    = $snap.Description
-                            ParentName     = $snap.VMName
-                            ParentKey      = $snap.VMKey
-                            Created        = $snap.Created
-                            ExpirationDate = $snap.Expires
-                            NeverExpires   = $snap.NeverExpires
+                        # Only include VM-only snapshots (not part of cloud snapshots)
+                        # If IsCloudSnapshot is true, the snapshot was created as part of a cloud snapshot
+                        if (-not $snap.IsCloudSnapshot) {
+                            $vmSnapshotList += [PSCustomObject]@{
+                                PSTypeName      = 'Verge.Inventory.VMSnapshot'
+                                Key             = $snap.Key
+                                Name            = $snap.Name
+                                Description     = $snap.Description
+                                VMName          = $snap.VMName
+                                VMKey           = $snap.VMKey
+                                Created         = $snap.Created
+                                Expires         = $snap.Expires
+                                NeverExpires    = $snap.NeverExpires
+                                Quiesced        = $snap.Quiesced
+                                CreatedManually = $snap.CreatedManually
+                            }
                         }
                     }
                 }
 
-                # Tenant Snapshots - need to iterate over tenants
+                # Also collect tenant snapshots that are manually created
                 $allTenants = Get-VergeTenant -Server $Server -ErrorAction SilentlyContinue
                 foreach ($tenant in $allTenants) {
                     $tenantSnapshots = Get-VergeTenantSnapshot -Tenant $tenant -Server $Server -ErrorAction SilentlyContinue
                     foreach ($snap in $tenantSnapshots) {
-                        $snapshots += [PSCustomObject]@{
-                            PSTypeName     = 'Verge.Inventory.Snapshot'
-                            Type           = 'Tenant'
-                            Key            = $snap.Key
-                            Name           = $snap.Name
-                            Description    = $snap.Description
-                            ParentName     = $snap.TenantName
-                            ParentKey      = $snap.TenantKey
-                            Created        = $snap.Created
-                            ExpirationDate = $snap.Expires
-                            NeverExpires   = ($snap.ExpiresTimestamp -eq 0)
+                        # Tenant snapshots from manual creation (not part of cloud snapshot profile)
+                        # Note: Tenant snapshots don't have CreatedManually field, so we include all
+                        # but they should be rare compared to cloud snapshots
+                        $vmSnapshotList += [PSCustomObject]@{
+                            PSTypeName      = 'Verge.Inventory.VMSnapshot'
+                            Key             = $snap.Key
+                            Name            = $snap.Name
+                            Description     = $snap.Description
+                            VMName          = "[Tenant] $($snap.TenantName)"
+                            VMKey           = $snap.TenantKey
+                            Created         = $snap.Created
+                            Expires         = $snap.Expires
+                            NeverExpires    = ($snap.ExpiresTimestamp -eq 0)
+                            Quiesced        = $null
+                            CreatedManually = $null
                         }
                     }
                 }
 
-                $inventory.Snapshots = $snapshots
+                $inventory.VMSnapshots = $vmSnapshotList
+            }
+
+            # Collect Cloud Snapshots (system-wide snapshots)
+            if ($collectCloudSnapshots) {
+                Write-Verbose "Collecting cloud snapshot inventory..."
+                $cloudSnapshotList = @()
+
+                $cloudSnapshots = Get-VergeCloudSnapshot -Server $Server -IncludeExpired -ErrorAction SilentlyContinue
+                foreach ($snap in $cloudSnapshots) {
+                    # Determine if snapshot is currently expired
+                    $isExpired = if ($snap.Expires) {
+                        $snap.Expires -lt (Get-Date)
+                    } else {
+                        $false
+                    }
+
+                    $cloudSnapshotList += [PSCustomObject]@{
+                        PSTypeName           = 'Verge.Inventory.CloudSnapshot'
+                        Key                  = $snap.Key
+                        Name                 = $snap.Name
+                        Description          = $snap.Description
+                        Created              = $snap.Created
+                        Expires              = $snap.Expires
+                        NeverExpires         = $snap.NeverExpires
+                        IsExpired            = $isExpired
+                        Profile              = $snap.SnapshotProfileName
+                        Status               = $snap.Status
+                        Immutable            = $snap.Immutable
+                        ImmutableStatus      = $snap.ImmutableStatus
+                        ImmutableLockExpires = $snap.ImmutableLockExpires
+                        RemoteSync           = $snap.RemoteSync
+                    }
+                }
+
+                $inventory.CloudSnapshots = $cloudSnapshotList
             }
 
             # Collect NAS
@@ -439,30 +483,29 @@ function Get-VergeInventory {
 
             # Generate summary
             $summaryData = [PSCustomObject]@{
-                PSTypeName      = 'Verge.Inventory.Summary'
-                Server          = $Server.Server
-                GeneratedAt     = $inventory.GeneratedAt
-                VMsTotal        = $inventory.VMs.Count
-                VMsRunning      = ($inventory.VMs | Where-Object PowerState -eq 'Running').Count
-                VMsStopped      = ($inventory.VMs | Where-Object PowerState -eq 'Stopped').Count
-                TotalCPUCores   = ($inventory.VMs | Measure-Object -Property CPUCores -Sum).Sum
-                TotalRAMGB      = [math]::Round(($inventory.VMs | Measure-Object -Property RAMGB -Sum).Sum, 1)
-                TotalDiskGB     = [math]::Round(($inventory.VMs | Measure-Object -Property TotalDiskGB -Sum).Sum, 1)
-                NetworksTotal   = $inventory.Networks.Count
-                NetworksRunning = ($inventory.Networks | Where-Object PowerState -eq 'Running').Count
-                StorageTiers    = $inventory.Storage.Count
+                PSTypeName        = 'Verge.Inventory.Summary'
+                Server            = $Server.Server
+                GeneratedAt       = $inventory.GeneratedAt
+                VMsTotal          = $inventory.VMs.Count
+                VMsRunning        = ($inventory.VMs | Where-Object PowerState -eq 'Running').Count
+                VMsStopped        = ($inventory.VMs | Where-Object PowerState -eq 'Stopped').Count
+                TotalCPUCores     = ($inventory.VMs | Measure-Object -Property CPUCores -Sum).Sum
+                TotalRAMGB        = [math]::Round(($inventory.VMs | Measure-Object -Property RAMGB -Sum).Sum, 1)
+                TotalDiskGB       = [math]::Round(($inventory.VMs | Measure-Object -Property TotalDiskGB -Sum).Sum, 1)
+                NetworksTotal     = $inventory.Networks.Count
+                NetworksRunning   = ($inventory.Networks | Where-Object PowerState -eq 'Running').Count
+                StorageTiers      = $inventory.Storage.Count
                 StorageCapacityGB = [math]::Round(($inventory.Storage | Measure-Object -Property CapacityGB -Sum).Sum, 1)
-                StorageUsedGB   = [math]::Round(($inventory.Storage | Measure-Object -Property UsedGB -Sum).Sum, 1)
-                NodesTotal      = $inventory.Nodes.Count
-                NodesOnline     = ($inventory.Nodes | Where-Object Status -eq 'Running').Count
-                ClustersTotal   = $inventory.Clusters.Count
-                TenantsTotal    = $inventory.Tenants.Count
-                TenantsOnline   = ($inventory.Tenants | Where-Object IsRunning -eq $true).Count
-                SnapshotsTotal  = $inventory.Snapshots.Count
-                VMSnapshots     = ($inventory.Snapshots | Where-Object Type -eq 'VM').Count
-                TenantSnapshots = ($inventory.Snapshots | Where-Object Type -eq 'Tenant').Count
-                NASServices     = ($inventory.NAS | Where-Object ItemType -eq 'Service').Count
-                NASVolumes      = ($inventory.NAS | Where-Object ItemType -eq 'Volume').Count
+                StorageUsedGB     = [math]::Round(($inventory.Storage | Measure-Object -Property UsedGB -Sum).Sum, 1)
+                NodesTotal        = $inventory.Nodes.Count
+                NodesOnline       = ($inventory.Nodes | Where-Object Status -eq 'Running').Count
+                ClustersTotal     = $inventory.Clusters.Count
+                TenantsTotal      = $inventory.Tenants.Count
+                TenantsOnline     = ($inventory.Tenants | Where-Object IsRunning -eq $true).Count
+                VMSnapshotsTotal  = $inventory.VMSnapshots.Count
+                CloudSnapshotsTotal = $inventory.CloudSnapshots.Count
+                NASServices       = ($inventory.NAS | Where-Object ItemType -eq 'Service').Count
+                NASVolumes        = ($inventory.NAS | Where-Object ItemType -eq 'Volume').Count
             }
 
             $inventory.Summary = $summaryData

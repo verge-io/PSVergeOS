@@ -153,8 +153,11 @@ if (Get-Module -ListAvailable -Name ImportExcel) {
     # Tenants worksheet
     $inventory.Tenants | Export-Excel -Path $excelPath -WorksheetName "vTenant" -AutoSize -FreezeTopRow -BoldTopRow
 
-    # Snapshots worksheet
-    $inventory.Snapshots | Export-Excel -Path $excelPath -WorksheetName "vSnapshot" -AutoSize -FreezeTopRow -BoldTopRow
+    # VM Snapshots worksheet (individual VM point-in-time snapshots)
+    $inventory.VMSnapshots | Export-Excel -Path $excelPath -WorksheetName "vSnapshot" -AutoSize -FreezeTopRow -BoldTopRow
+
+    # Cloud Snapshots worksheet (system-wide snapshots with immutability)
+    $inventory.CloudSnapshots | Export-Excel -Path $excelPath -WorksheetName "vCloudSnapshot" -AutoSize -FreezeTopRow -BoldTopRow
 
     # Summary worksheet with conditional formatting
     $inventory.Summary | Export-Excel -Path $excelPath -WorksheetName "Summary" -AutoSize
@@ -229,15 +232,22 @@ $netInventory.Networks |
                   @{N='Running';E={($_.Group | Where-Object PowerState -eq 'Running').Count}} |
     Format-Table
 
-# Snapshot Age Report
-Write-Host "`n=== Snapshots Older Than 30 Days ==="
-$snapInventory = Get-VergeInventory -ResourceType Snapshots
+# VM Snapshot Age Report
+Write-Host "`n=== VM Snapshots Older Than 30 Days ==="
+$snapInventory = Get-VergeInventory -ResourceType VMSnapshots
 $thirtyDaysAgo = (Get-Date).AddDays(-30)
-$snapInventory.Snapshots |
+$snapInventory.VMSnapshots |
     Where-Object { $_.Created -and $_.Created -lt $thirtyDaysAgo } |
-    Select-Object Type, ParentName, Name, Created,
+    Select-Object VMName, Name, Created,
                   @{N='AgeDays';E={[math]::Round(((Get-Date) - $_.Created).TotalDays)}} |
     Sort-Object AgeDays -Descending |
+    Format-Table
+
+# Cloud Snapshot Immutability Report
+Write-Host "`n=== Cloud Snapshot Immutability Status ==="
+$cloudSnapInventory = Get-VergeInventory -ResourceType CloudSnapshots
+$cloudSnapInventory.CloudSnapshots |
+    Select-Object Name, Created, Immutable, ImmutableStatus, ImmutableLockExpires, RemoteSync |
     Format-Table
 
 #endregion
@@ -269,7 +279,8 @@ function Export-VergeInventoryReport {
         $inventory.Nodes | Export-Csv "$csvPath/Nodes.csv" -NoTypeInformation
         $inventory.Clusters | Export-Csv "$csvPath/Clusters.csv" -NoTypeInformation
         $inventory.Tenants | Export-Csv "$csvPath/Tenants.csv" -NoTypeInformation
-        $inventory.Snapshots | Export-Csv "$csvPath/Snapshots.csv" -NoTypeInformation
+        $inventory.VMSnapshots | Export-Csv "$csvPath/VMSnapshots.csv" -NoTypeInformation
+        $inventory.CloudSnapshots | Export-Csv "$csvPath/CloudSnapshots.csv" -NoTypeInformation
         $inventory.Summary | Export-Csv "$csvPath/Summary.csv" -NoTypeInformation
 
         Write-Host "CSV report exported to: $csvPath"
@@ -291,7 +302,8 @@ function Export-VergeInventoryReport {
         $inventory.Nodes | Export-Excel -Path $excelPath -WorksheetName "Nodes" -AutoSize -FreezeTopRow -BoldTopRow
         $inventory.Clusters | Export-Excel -Path $excelPath -WorksheetName "Clusters" -AutoSize -FreezeTopRow -BoldTopRow
         $inventory.Tenants | Export-Excel -Path $excelPath -WorksheetName "Tenants" -AutoSize -FreezeTopRow -BoldTopRow
-        $inventory.Snapshots | Export-Excel -Path $excelPath -WorksheetName "Snapshots" -AutoSize -FreezeTopRow -BoldTopRow
+        $inventory.VMSnapshots | Export-Excel -Path $excelPath -WorksheetName "VMSnapshots" -AutoSize -FreezeTopRow -BoldTopRow
+        $inventory.CloudSnapshots | Export-Excel -Path $excelPath -WorksheetName "CloudSnapshots" -AutoSize -FreezeTopRow -BoldTopRow
 
         Write-Host "Excel report exported to: $excelPath"
     }
