@@ -185,6 +185,29 @@ This is an interactive script that can be run with parameters:
 ./11-RestoreFromCloudSnapshot.ps1 -Name "CustomerA" -Type Tenant
 ```
 
+---
+
+### 12-InventoryReport.ps1
+**RVtools-Style Infrastructure Inventory**
+
+Comprehensive infrastructure inventory reports:
+- Quick summary statistics across all resources
+- Detailed VM inventory with hardware specs (CPU, RAM, disks, NICs)
+- Network configuration reports
+- Storage capacity planning with utilization charts
+- Node and cluster status reports
+- Tenant inventory for MSP environments
+- Snapshot age and cleanup reports
+- Export to CSV, JSON, or Excel (multi-worksheet)
+- Custom report templates for compliance
+
+```powershell
+# Quick examples
+Get-VergeInventory -Summary | Format-List
+Get-VergeInventory -ResourceType VMs | Select-Object -ExpandProperty VMs | Export-Csv VMs.csv
+Get-VergeInventory | ForEach-Object { $_.VMs | Export-Excel -Path Inventory.xlsx -WorksheetName VMs }
+```
+
 ## Running the Examples
 
 1. **Connect first** - All examples assume an active connection:

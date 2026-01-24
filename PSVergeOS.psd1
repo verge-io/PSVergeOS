@@ -258,6 +258,7 @@
         'Get-VergeLicense'
         'Get-VergeNodeDriver'
         'Get-VergeNodeDevice'
+        'Get-VergeInventory'
 
         # Tasks/Monitoring
         'Get-VergeTask'
