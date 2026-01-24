@@ -90,10 +90,14 @@ Write-Host "VMs: $($inventory.VMs.Count), Networks: $($inventory.Networks.Count)
 $runningVMs = Get-VergeInventory -ResourceType VMs -IncludePoweredOff:$false
 Write-Host "Running VMs: $($runningVMs.VMs.Count)"
 
-# Include snapshots in the inventory
-$withSnapshots = Get-VergeInventory -ResourceType VMs, Snapshots -IncludeSnapshots
+# Include snapshot VMs in the VM list
+# -IncludeSnapshots: When specified, VMs that are actually point-in-time snapshots of other VMs
+#                    will be included in the VMs collection. By default, these are excluded.
+# -ResourceType VMSnapshots: Returns snapshot metadata (name, created date, expiration, etc.)
+#                            in a separate collection. This is independent of -IncludeSnapshots.
+$withSnapshots = Get-VergeInventory -ResourceType VMs, VMSnapshots -IncludeSnapshots
 Write-Host "VMs (including snapshot VMs): $($withSnapshots.VMs.Count)"
-Write-Host "Snapshots: $($withSnapshots.Snapshots.Count)"
+Write-Host "VM Snapshots: $($withSnapshots.VMSnapshots.Count)"
 
 #endregion
 

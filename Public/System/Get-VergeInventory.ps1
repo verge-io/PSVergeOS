@@ -183,13 +183,67 @@ function Get-VergeInventory {
                     $vms = $vms | Where-Object { $_.PowerState -eq 'Running' }
                 }
 
-                # Enrich with drive and NIC counts
-                $inventory.VMs = foreach ($vm in $vms) {
-                    $drives = @(Get-VergeDrive -VMKey $vm.Key -Server $Server -ErrorAction SilentlyContinue)
-                    $nics = @(Get-VergeNIC -VMKey $vm.Key -Server $Server -ErrorAction SilentlyContinue)
+                # Bulk fetch all drives and NICs in 2 API calls instead of 2N calls
+                # This is much more efficient for large environments
+                Write-Verbose "Bulk fetching drives and NICs for all VMs..."
 
-                    # Calculate total disk size
-                    $totalDiskGB = ($drives | Measure-Object -Property SizeGB -Sum).Sum
+                # Fetch all virtual drives (physical_status eq null excludes physical host drives)
+                $driveQuery = @{
+                    filter = 'physical_status eq null'
+                    fields = '$key,name,machine,disksize,used_bytes,media_source#allocated_bytes as allocated_bytes'
+                }
+                $driveResponse = Invoke-VergeAPI -Method GET -Endpoint 'machine_drives' -Query $driveQuery -Connection $Server -ErrorAction SilentlyContinue
+                $allDrives = if ($driveResponse -is [array]) { $driveResponse } elseif ($driveResponse) { @($driveResponse) } else { @() }
+
+                # Fetch all NICs
+                $nicQuery = @{
+                    fields = '$key,name,machine'
+                }
+                $nicResponse = Invoke-VergeAPI -Method GET -Endpoint 'machine_nics' -Query $nicQuery -Connection $Server -ErrorAction SilentlyContinue
+                $allNICs = if ($nicResponse -is [array]) { $nicResponse } elseif ($nicResponse) { @($nicResponse) } else { @() }
+
+                # Build lookup tables by machine key for O(1) access
+                # API returns 'machine' field, not 'MachineKey'
+                $drivesByMachine = @{}
+                foreach ($drive in $allDrives) {
+                    $machineKey = $drive.machine
+                    if ($machineKey -and -not $drivesByMachine.ContainsKey($machineKey)) {
+                        $drivesByMachine[$machineKey] = [System.Collections.Generic.List[object]]::new()
+                    }
+                    if ($machineKey) {
+                        $drivesByMachine[$machineKey].Add($drive)
+                    }
+                }
+
+                $nicsByMachine = @{}
+                foreach ($nic in $allNICs) {
+                    $machineKey = $nic.machine
+                    if ($machineKey -and -not $nicsByMachine.ContainsKey($machineKey)) {
+                        $nicsByMachine[$machineKey] = [System.Collections.Generic.List[object]]::new()
+                    }
+                    if ($machineKey) {
+                        $nicsByMachine[$machineKey].Add($nic)
+                    }
+                }
+
+                # Enrich VMs with drive and NIC counts using lookup tables
+                $inventory.VMs = foreach ($vm in $vms) {
+                    $drives = if ($drivesByMachine.ContainsKey($vm.MachineKey)) {
+                        $drivesByMachine[$vm.MachineKey]
+                    } else { @() }
+
+                    $nics = if ($nicsByMachine.ContainsKey($vm.MachineKey)) {
+                        $nicsByMachine[$vm.MachineKey]
+                    } else { @() }
+
+                    # Calculate total disk size from raw API response
+                    # disksize or allocated_bytes, convert from bytes to GB
+                    $totalDiskBytes = ($drives | ForEach-Object {
+                        if ($_.disksize) { $_.disksize }
+                        elseif ($_.allocated_bytes) { $_.allocated_bytes }
+                        else { 0 }
+                    } | Measure-Object -Sum).Sum
+                    $totalDiskGB = $totalDiskBytes / 1GB
 
                     [PSCustomObject]@{
                         PSTypeName       = 'Verge.Inventory.VM'
@@ -209,9 +263,9 @@ function Get-VergeInventory {
                         Node             = $vm.Node
                         HAGroup          = $vm.HAGroup
                         SnapshotProfile  = $vm.SnapshotProfile
-                        DiskCount        = $drives.Count
+                        DiskCount        = @($drives).Count
                         TotalDiskGB      = [math]::Round($totalDiskGB, 1)
-                        NICCount         = $nics.Count
+                        NICCount         = @($nics).Count
                         Created          = $vm.Created
                         Modified         = $vm.Modified
                     }
