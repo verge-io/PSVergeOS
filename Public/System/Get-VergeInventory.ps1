@@ -24,12 +24,10 @@ function Get-VergeInventory {
         - NAS: NAS services, volumes, and shares
         - All: All resource types (default)
 
-    .PARAMETER TenantName
-        Filter inventory to a specific tenant context. Only applies to VMs and Networks.
-
     .PARAMETER IncludeSnapshots
-        Include snapshot details for VMs and tenants. By default, snapshots are excluded
-        from VM and tenant lists but included in the dedicated Snapshots resource type.
+        Include snapshot VMs in the VM list. By default, VMs that are point-in-time snapshots
+        of other VMs are excluded. Snapshot metadata is available via VMSnapshots and
+        CloudSnapshots resource types regardless of this setting.
 
     .PARAMETER IncludePoweredOff
         Include powered-off VMs. By default, all VMs are included regardless of power state.
@@ -106,9 +104,6 @@ function Get-VergeInventory {
         [Parameter(Position = 0)]
         [ValidateSet('All', 'VMs', 'Networks', 'Storage', 'Nodes', 'Clusters', 'Tenants', 'VMSnapshots', 'CloudSnapshots', 'NAS')]
         [string[]]$ResourceType = @('All'),
-
-        [Parameter()]
-        [string]$TenantName,
 
         [Parameter()]
         [switch]$IncludeSnapshots,

@@ -64,7 +64,8 @@ Write-Host "Infrastructure"
 Write-Host "  Clusters:   $($summary.ClustersTotal)"
 Write-Host "  Nodes:      $($summary.NodesTotal) ($($summary.NodesOnline) online)"
 Write-Host "  Tenants:    $($summary.TenantsTotal) ($($summary.TenantsOnline) online)"
-Write-Host "  Snapshots:  $($summary.SnapshotsTotal)"
+Write-Host "  VM Snapshots:    $($summary.VMSnapshotsTotal)"
+Write-Host "  Cloud Snapshots: $($summary.CloudSnapshotsTotal)"
 Write-Host ""
 
 #endregion
