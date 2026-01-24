@@ -318,14 +318,17 @@
             # Tags applied to this module for discoverability in online galleries
             Tags = @('VergeOS', 'Virtualization', 'Infrastructure', 'Automation', 'VM', 'Hypervisor', 'API')
 
-            # A URL to the license for this module
-            LicenseUri = 'https://github.com/verge-io/PSVergeOS/blob/main/LICENSE'
+            # SPDX license expression
+            License = 'MIT'
 
             # A URL to the main website for this project
             ProjectUri = 'https://github.com/verge-io/PSVergeOS'
 
             # A URL to an icon representing this module
             # IconUri = ''
+
+            # README file to display on PowerShell Gallery
+            Readme = 'README.md'
 
             # ReleaseNotes of this module
             ReleaseNotes = 'Initial stable release. Full VergeOS API coverage for VM lifecycle, networking, storage, NAS, tenants, backup/DR, and monitoring.'
