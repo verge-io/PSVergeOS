@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Pester Tests
+        shell: pwsh
+        run: |
+          $results = Invoke-Pester -Path ./Tests -PassThru -Output Detailed
+          if ($results.FailedCount -gt 0) {
+            throw "$($results.FailedCount) tests failed"
+          }
+
+  release:
+    name: Publish to PowerShell Gallery
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate version matches release tag
+        shell: pwsh
+        run: |
+          $manifest = Import-PowerShellDataFile -Path ./PSVergeOS.psd1
+          $moduleVersion = $manifest.ModuleVersion
+          $releaseTag = "${{ github.event.release.tag_name }}"
+
+          # Strip 'v' prefix if present
+          $tagVersion = $releaseTag -replace '^v', ''
+
+          if ($moduleVersion -ne $tagVersion) {
+            throw "Module version ($moduleVersion) does not match release tag ($tagVersion). Update PSVergeOS.psd1 before releasing."
+          }
+
+          Write-Host "Version validated: $moduleVersion"
+
+      - name: Publish to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          Publish-Module -Path ./ -NuGetApiKey $env:PSGALLERY_API_KEY -Verbose
