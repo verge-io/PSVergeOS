@@ -199,6 +199,37 @@ Ensure:
 - **Integration Tests**: Run against live VergeOS instance (requires credentials)
 - **Coverage**: >90% on Public cmdlets
 
+## Releasing to PowerShell Gallery
+
+Releases are automated via GitHub Actions. When a GitHub release is published, the module is automatically pushed to PowerShell Gallery.
+
+### Release Workflow
+
+1. Update `ModuleVersion` in `PSVergeOS.psd1`
+2. Update `ReleaseNotes` in `PSVergeOS.psd1` (optional but recommended)
+3. Commit and push to `main`
+4. Create a GitHub release with a matching tag (e.g., `v1.0.2` for version `1.0.2`)
+5. The workflow validates the version matches and publishes to PowerShell Gallery
+
+### Quick Release Commands
+
+```bash
+# After updating PSVergeOS.psd1 with new version (e.g., 1.0.2)
+git add PSVergeOS.psd1
+git commit -m "🔖 release: bump version to 1.0.2"
+git push
+
+# Create tag and release
+git tag -a v1.0.2 -m "v1.0.2 - Description of changes"
+git push origin v1.0.2
+gh release create v1.0.2 --title "v1.0.2" --notes "Description of changes"
+```
+
+### Requirements
+
+- `PSGALLERY_API_KEY` secret must be configured in GitHub repo settings
+- Tag version must match `ModuleVersion` in manifest (with or without `v` prefix)
+
 ## API Schema Reference
 
 336 endpoint schemas in `.claude/reference/api-schema/endpoints/`:
