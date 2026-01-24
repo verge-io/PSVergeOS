@@ -8,8 +8,8 @@
     It supports VM lifecycle, networking, storage, and multi-tenant management.
 
 .NOTES
-    Author: Verge Engineering
-    Version: 0.1.0
+    Author: Larry Ludlow (support@verge.io)
+    Version: 1.0.0
     Requires: PowerShell 7.4+, VergeOS 26.0+
 #>
 

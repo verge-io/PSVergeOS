@@ -6,7 +6,7 @@
     RootModule = 'PSVergeOS.psm1'
 
     # Version number of this module
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '1.0.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core')
@@ -15,7 +15,7 @@
     GUID = 'f8a7b3c1-5d2e-4f6a-9b8c-1e2d3f4a5b6c'
 
     # Author of this module
-    Author = 'Verge Engineering'
+    Author = 'Larry Ludlow (support@verge.io)'
 
     # Company or vendor of this module
     CompanyName = 'Verge.io'
@@ -328,10 +328,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Initial development release'
-
-            # Prerelease string of this module
-            Prerelease = 'alpha'
+            ReleaseNotes = 'Initial stable release. Full VergeOS API coverage for VM lifecycle, networking, storage, NAS, tenants, backup/DR, and monitoring.'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
