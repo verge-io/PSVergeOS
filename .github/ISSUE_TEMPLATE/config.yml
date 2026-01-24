@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: VergeOS Documentation
+    url: https://docs.verge.io/
+    about: Official VergeOS documentation and knowledge base
+  - name: VergeOS Support
+    url: https://www.verge.io/support
+    about: Commercial support options for VergeOS customers

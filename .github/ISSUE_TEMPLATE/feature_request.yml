@@ -1,0 +1,85 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for PSVergeOS
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Help us understand what you'd like to see in PSVergeOS.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: What area does this feature relate to?
+      options:
+        - Virtual Machines
+        - Networking
+        - Storage / NAS
+        - Tenants
+        - Users & Permissions
+        - Backup & DR
+        - Monitoring
+        - System Administration
+        - Connection / Authentication
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: Describe the problem you're trying to solve or the use case for this feature
+      placeholder: |
+        I'm trying to automate X but currently there's no way to...
+
+        Our workflow requires Y but the current cmdlets don't support...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature or solution you'd like to see
+      placeholder: |
+        A new cmdlet `Verb-VergeNoun` that would...
+
+        Add a `-Parameter` to `Existing-Cmdlet` that...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example Usage
+      description: Show how you envision using this feature
+      render: powershell
+      placeholder: |
+        # Example of how this feature would be used
+        New-VergeFeature -Parameter "value"
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+
+  - type: dropdown
+    id: api
+    attributes:
+      label: VergeOS API Support
+      description: Does the VergeOS API already support this functionality?
+      options:
+        - "Yes - API endpoint exists"
+        - "Partial - Some API support"
+        - "No - Would need API changes"
+        - "Unknown"
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, mockups, or references that might help

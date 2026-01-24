@@ -1,0 +1,45 @@
+name: Question
+description: Ask a question about using PSVergeOS
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about using PSVergeOS? We're here to help!
+
+        Before asking, please check:
+        - [README](https://github.com/verge-io/PSVergeOS#readme)
+        - [Example scripts](https://github.com/verge-io/PSVergeOS/tree/main/Examples)
+        - [Cmdlet documentation](https://github.com/verge-io/PSVergeOS/tree/main/docs/cmdlets)
+        - Built-in help: `Get-Help <CmdletName> -Full`
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to accomplish? Share any relevant background.
+      placeholder: |
+        I'm trying to automate our VM deployment process and need to understand...
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What I've Tried
+      description: What have you already attempted?
+      render: powershell
+
+  - type: input
+    id: vergeos-version
+    attributes:
+      label: VergeOS Version
+      description: If relevant, what version of VergeOS are you using?
+      placeholder: "e.g., 26.0.1"

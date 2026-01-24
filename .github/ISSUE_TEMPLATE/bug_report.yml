@@ -1,0 +1,106 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in PSVergeOS
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below to help us understand and fix the issue.
+
+  - type: input
+    id: cmdlet
+    attributes:
+      label: Affected Cmdlet(s)
+      description: Which cmdlet(s) are you experiencing issues with?
+      placeholder: "e.g., Get-VergeVM, New-VergeNetwork"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear description of the bug
+      placeholder: Describe what happened and what you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to reproduce the behavior
+      placeholder: |
+        1. Connect to VergeOS with `Connect-VergeOS -Server "..." -Credential $cred`
+        2. Run `Get-VergeVM -Name "..."`
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include any error messages.
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error Output
+      description: If applicable, paste the full error message
+      render: powershell
+
+  - type: input
+    id: ps-version
+    attributes:
+      label: PowerShell Version
+      description: Output of `$PSVersionTable.PSVersion`
+      placeholder: "e.g., 7.4.1"
+    validations:
+      required: true
+
+  - type: input
+    id: module-version
+    attributes:
+      label: PSVergeOS Version
+      description: Output of `(Get-Module PSVergeOS).Version`
+      placeholder: "e.g., 1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: vergeos-version
+    attributes:
+      label: VergeOS Version
+      description: Output of `(Get-VergeVersion).VergeOSVersion`
+      placeholder: "e.g., 26.0.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or information that might help
