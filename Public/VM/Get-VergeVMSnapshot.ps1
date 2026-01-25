@@ -120,6 +120,7 @@ function Get-VergeVMSnapshot {
                 'created_manually'
                 'machine'
                 'snap_machine'
+                'snapshot_period'
             ) -join ','
 
             $queryParams['sort'] = '-created'
@@ -173,6 +174,8 @@ function Get-VergeVMSnapshot {
                         SnapMachineKey  = $snapshot.snap_machine
                         VMKey           = $targetVM.Key
                         VMName          = $targetVM.Name
+                        SnapshotPeriod  = $snapshot.snapshot_period
+                        IsCloudSnapshot = [bool]$snapshot.snapshot_period
                     }
 
                     # Add hidden properties for pipeline support
