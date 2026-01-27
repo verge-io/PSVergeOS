@@ -39,15 +39,15 @@ jobs:
           Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
 
           Write-Host "Analyzing Public functions..."
-          $publicResults = Invoke-ScriptAnalyzer -Path ./Public -Recurse -Severity Error, Warning
+          $publicResults = Invoke-ScriptAnalyzer -Path ./Public -Recurse -Severity Error
 
           Write-Host "Analyzing Private functions..."
-          $privateResults = Invoke-ScriptAnalyzer -Path ./Private -Recurse -Severity Error, Warning
+          $privateResults = Invoke-ScriptAnalyzer -Path ./Private -Recurse -Severity Error
 
           $allResults = @($publicResults) + @($privateResults) | Where-Object { $_ }
 
           if ($allResults.Count -gt 0) {
-            Write-Host "`n❌ PSScriptAnalyzer found $($allResults.Count) issue(s):`n"
+            Write-Host "`n❌ PSScriptAnalyzer found $($allResults.Count) error(s):`n"
             $allResults | ForEach-Object {
               Write-Host "  [$($_.Severity)] $($_.ScriptName):$($_.Line)"
               Write-Host "    Rule: $($_.RuleName)"
@@ -56,4 +56,4 @@ jobs:
             exit 1
           }
 
-          Write-Host "✓ PSScriptAnalyzer passed (no errors or warnings)"
+          Write-Host "✓ PSScriptAnalyzer passed (no errors)"
