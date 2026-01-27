@@ -65,6 +65,16 @@ function New-VergeVM {
         - Disk: Disk only
         - CD: CD-ROM only
 
+    .PARAMETER CloudInit
+        Enable cloud-init datasource for VM provisioning. Valid values:
+        - None: Disabled (default)
+        - ConfigDrive: Config Drive v2 - Standard cloud-init config drive
+        - NoCloud: NoCloud datasource
+
+        When enabled, the VM will look for cloud-init files (/user-data, /meta-data,
+        /network-config) to configure itself on first boot. Use New-VergeCloudInitFile
+        to create the configuration files.
+
     .PARAMETER SnapshotProfile
         The name or key of a snapshot profile to assign.
 
@@ -113,6 +123,12 @@ function New-VergeVM {
         New-VergeVM @vmParams -PassThru
 
         Creates a VM using splatting for cleaner parameter passing.
+
+    .EXAMPLE
+        New-VergeVM -Name "CloudServer" -CPUCores 2 -RAM 2048 -OSFamily Linux -UEFI -CloudInit ConfigDrive -PassThru
+
+        Creates a VM with cloud-init Config Drive enabled. After creating the VM,
+        use New-VergeCloudInitFile to add /user-data, /meta-data, and /network-config files.
 
     .OUTPUTS
         None by default. Verge.VM when -PassThru is specified.
@@ -176,6 +192,10 @@ function New-VergeVM {
         [string]$BootOrder = 'DiskCD',
 
         [Parameter()]
+        [ValidateSet('None', 'ConfigDrive', 'NoCloud')]
+        [string]$CloudInit = 'None',
+
+        [Parameter()]
         [string]$SnapshotProfile,
 
         [Parameter()]
@@ -235,6 +255,12 @@ function New-VergeVM {
             'Disk'          = 'c'
             'CD'            = 'd'
         }
+
+        $cloudInitMap = @{
+            'None'        = 'none'
+            'ConfigDrive' = 'config_drive_v2'
+            'NoCloud'     = 'nocloud'
+        }
     }
 
     process {
@@ -275,6 +301,10 @@ function New-VergeVM {
 
         if ($GuestAgent) {
             $body['guest_agent'] = $true
+        }
+
+        if ($CloudInit -ne 'None') {
+            $body['cloudinit_datasource'] = $cloudInitMap[$CloudInit]
         }
 
         if ($CPUType) {
