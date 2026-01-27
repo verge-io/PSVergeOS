@@ -208,6 +208,42 @@ Get-VergeInventory -ResourceType VMs | Select-Object -ExpandProperty VMs | Expor
 Get-VergeInventory | ForEach-Object { $_.VMs | Export-Excel -Path Inventory.xlsx -WorksheetName VMs }
 ```
 
+---
+
+### 13-TagManagement.ps1
+**Tag Management and Resource Organization**
+
+Tag categories, tags, and resource tagging:
+- Creating tag categories with resource type restrictions
+- Creating tags within categories
+- Assigning tags to VMs, networks, and tenants
+- Querying tagged resources
+- Tag compliance reporting
+- Bulk tagging operations
+
+---
+
+### 14-CertificateManagement.ps1
+**SSL/TLS Certificate Management**
+
+Complete certificate lifecycle management:
+- Listing and filtering certificates by type, domain, validity
+- Creating self-signed certificates for internal use
+- Uploading manual certificates (existing certs)
+- Configuring Let's Encrypt (ACME) certificates
+- Modifying certificate properties and SANs
+- Renewing Let's Encrypt and regenerating self-signed certificates
+- Certificate expiration monitoring and alerting
+- Auto-renewal workflows for expiring certificates
+- Certificate inventory export and backup
+
+```powershell
+# Quick examples
+Get-VergeCertificate | Format-Table Domain, Type, Valid, DaysUntilExpiry
+Get-VergeCertificate | Where-Object { $_.DaysUntilExpiry -lt 30 } | Update-VergeCertificate -Force
+New-VergeCertificate -DomainName "app.local" -Type SelfSigned -PassThru
+```
+
 ## Running the Examples
 
 1. **Connect first** - All examples assume an active connection:
