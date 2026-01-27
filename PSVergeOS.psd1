@@ -69,6 +69,13 @@
         'Remove-VergeVMSnapshot'
         'Restore-VergeVMSnapshot'
 
+        # CloudInit Files
+        'Get-VergeCloudInitFile'
+        'Get-VergeCloudInitFileContent'
+        'New-VergeCloudInitFile'
+        'Remove-VergeCloudInitFile'
+        'Set-VergeCloudInitFile'
+
         # Storage/Files
         'Get-VergeFile'
         'Get-VergeStorageTier'
