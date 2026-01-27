@@ -1,4 +1,6 @@
 function Set-VergeNASUser {
+    # Suppress false positive: Name parameter identifies the NAS user to modify, not authentication credentials
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '')]
     <#
     .SYNOPSIS
         Modifies an existing local user on a NAS service in VergeOS.

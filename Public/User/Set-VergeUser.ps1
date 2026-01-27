@@ -1,4 +1,6 @@
 function Set-VergeUser {
+    # Suppress false positive: Name parameter identifies the user to modify, not authentication credentials
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '')]
     <#
     .SYNOPSIS
         Modifies an existing user in VergeOS.

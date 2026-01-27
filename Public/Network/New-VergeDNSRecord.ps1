@@ -13,7 +13,7 @@ function New-VergeDNSRecord {
     .PARAMETER ZoneKey
         The unique key of the DNS zone to create the record in.
 
-    .PARAMETER Host
+    .PARAMETER HostName
         The hostname for the record (e.g., "www", "@" for root, or blank to inherit).
 
     .PARAMETER Type
@@ -44,7 +44,7 @@ function New-VergeDNSRecord {
         The VergeOS connection to use. Defaults to the current default connection.
 
     .EXAMPLE
-        Get-VergeDNSZone -Network "Internal" -Domain "example.com" | New-VergeDNSRecord -Host "www" -Type A -Value "10.0.0.100"
+        Get-VergeDNSZone -Network "Internal" -Domain "example.com" | New-VergeDNSRecord -HostName "www" -Type A -Value "10.0.0.100"
 
         Creates an A record for www.example.com pointing to 10.0.0.100.
 
@@ -70,7 +70,7 @@ function New-VergeDNSRecord {
         [int]$ZoneKey,
 
         [Parameter()]
-        [string]$Host = '',
+        [string]$HostName = '',
 
         [Parameter(Mandatory)]
         [ValidateSet('A', 'AAAA', 'CNAME', 'MX', 'NS', 'PTR', 'SRV', 'TXT', 'CAA')]
@@ -126,7 +126,7 @@ function New-VergeDNSRecord {
         # Build request body
         $body = @{
             zone  = $targetZoneKey
-            host  = $Host
+            host  = $HostName
             type  = $Type
             value = $Value
         }
@@ -151,7 +151,7 @@ function New-VergeDNSRecord {
             $body['description'] = $Description
         }
 
-        $displayHost = if ($Host) { $Host } else { '@' }
+        $displayHost = if ($HostName) { $HostName } else { '@' }
 
         if ($PSCmdlet.ShouldProcess("$displayHost $Type $Value", "Create DNS Record")) {
             try {

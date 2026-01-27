@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate PowerShell Module
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate module manifest
+        shell: pwsh
+        run: |
+          Write-Host "Validating module manifest..."
+          $manifest = Test-ModuleManifest -Path ./PSVergeOS.psd1 -ErrorAction Stop
+          Write-Host "✓ Manifest is valid"
+          Write-Host "  Module: $($manifest.Name)"
+          Write-Host "  Version: $($manifest.Version)"
+          Write-Host "  Exported functions: $($manifest.ExportedFunctions.Count)"
+
+      - name: Import module
+        shell: pwsh
+        run: |
+          Write-Host "Importing module..."
+          Import-Module ./PSVergeOS.psd1 -Force -ErrorAction Stop
+          Write-Host "✓ Module imported successfully"
+
+          $commands = Get-Command -Module PSVergeOS
+          Write-Host "  Loaded $($commands.Count) commands"
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Write-Host "Installing PSScriptAnalyzer..."
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+          Write-Host "Analyzing Public functions..."
+          $publicResults = Invoke-ScriptAnalyzer -Path ./Public -Recurse -Severity Error
+
+          Write-Host "Analyzing Private functions..."
+          $privateResults = Invoke-ScriptAnalyzer -Path ./Private -Recurse -Severity Error
+
+          $allResults = @($publicResults) + @($privateResults) | Where-Object { $_ }
+
+          if ($allResults.Count -gt 0) {
+            Write-Host "`n❌ PSScriptAnalyzer found $($allResults.Count) error(s):`n"
+            $allResults | ForEach-Object {
+              Write-Host "  [$($_.Severity)] $($_.ScriptName):$($_.Line)"
+              Write-Host "    Rule: $($_.RuleName)"
+              Write-Host "    Message: $($_.Message)`n"
+            }
+            exit 1
+          }
+
+          Write-Host "✓ PSScriptAnalyzer passed (no errors)"

@@ -172,20 +172,20 @@ function Get-VergeNetworkHost {
                 $hosts = $hosts | Where-Object { $_.host -like $Hostname }
             }
 
-            foreach ($host in $hosts) {
+            foreach ($hostEntry in $hosts) {
                 # Create typed output object
                 $output = [PSCustomObject]@{
                     PSTypeName  = 'Verge.NetworkHost'
-                    Key         = $host.'$key'
-                    NetworkKey  = $host.vnet
-                    NetworkName = $host.vnet_name
-                    Type        = switch ($host.type) {
+                    Key         = $hostEntry.'$key'
+                    NetworkKey  = $hostEntry.vnet
+                    NetworkName = $hostEntry.vnet_name
+                    Type        = switch ($hostEntry.type) {
                         'host'   { 'Host' }
                         'domain' { 'Domain' }
-                        default  { $host.type }
+                        default  { $hostEntry.type }
                     }
-                    Hostname    = $host.host
-                    IP          = $host.ip
+                    Hostname    = $hostEntry.host
+                    IP          = $hostEntry.ip
                 }
 
                 Write-Output $output
