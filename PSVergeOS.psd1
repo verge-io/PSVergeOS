@@ -266,6 +266,12 @@
         'Set-VergeTagCategory'
         'Remove-VergeTagCategory'
 
+        # Tags
+        'Get-VergeTag'
+        'New-VergeTag'
+        'Set-VergeTag'
+        'Remove-VergeTag'
+
         # Tasks/Monitoring
         'Get-VergeTask'
         'Wait-VergeTask'
