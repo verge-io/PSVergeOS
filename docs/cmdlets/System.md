@@ -336,7 +336,337 @@ if ($license.ValidUntil) {
 }
 ```
 
+## Tag Categories
+
+Tag categories organize tags and define which resource types can be tagged.
+
+### Get-VergeTagCategory
+
+Lists tag categories.
+
+**Syntax:**
+```powershell
+Get-VergeTagCategory [-Name <String>] [-Key <Int32>]
+```
+
+**Examples:**
+
+```powershell
+# List all tag categories
+Get-VergeTagCategory
+
+# Get a specific category
+Get-VergeTagCategory -Name "Environment"
+
+# View which resources can be tagged
+Get-VergeTagCategory | Format-Table Name, TaggableVMs, TaggableNetworks, TaggableTenants, SingleTagSelection
+```
+
+---
+
+### New-VergeTagCategory
+
+Creates a new tag category.
+
+**Syntax:**
+```powershell
+New-VergeTagCategory -Name <String> [-Description <String>] [-SingleTagSelection]
+    [-TaggableVMs] [-TaggableNetworks] [-TaggableTenants] [-TaggableNodes]
+    [-TaggableClusters] [-TaggableUsers] [-TaggableGroups] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Create environment category (single tag per resource)
+New-VergeTagCategory -Name "Environment" `
+    -Description "Deployment environment" `
+    -TaggableVMs -TaggableNetworks -TaggableTenants `
+    -SingleTagSelection
+
+# Create application category (multiple tags allowed)
+New-VergeTagCategory -Name "Application" `
+    -Description "Application tier tags" `
+    -TaggableVMs -PassThru
+```
+
+---
+
+### Set-VergeTagCategory
+
+Modifies a tag category.
+
+**Syntax:**
+```powershell
+Set-VergeTagCategory -Name <String> [-Description <String>] [-TaggableVMs <Boolean>]
+    [-TaggableNetworks <Boolean>] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Enable additional resource types
+Set-VergeTagCategory -Name "Environment" -TaggableNodes $true -TaggableClusters $true
+
+# Update description
+Set-VergeTagCategory -Name "Application" -Description "Application and service identification"
+```
+
+---
+
+### Remove-VergeTagCategory
+
+Deletes a tag category.
+
+> **Note:** Category must have no tags before deletion.
+
+**Syntax:**
+```powershell
+Remove-VergeTagCategory -Name <String> [-Confirm:$false]
+```
+
+**Examples:**
+
+```powershell
+# Remove an empty category
+Remove-VergeTagCategory -Name "UnusedCategory"
+
+# Force removal without confirmation
+Remove-VergeTagCategory -Name "OldCategory" -Confirm:$false
+```
+
+## Tags
+
+Tags are labels within categories that can be assigned to resources.
+
+### Get-VergeTag
+
+Lists tags.
+
+**Syntax:**
+```powershell
+Get-VergeTag [-Name <String>] [-Key <Int32>] [-Category <Object>]
+```
+
+**Examples:**
+
+```powershell
+# List all tags
+Get-VergeTag
+
+# List tags in a category
+Get-VergeTag -Category "Environment"
+
+# Find tags by name pattern
+Get-VergeTag -Name "Prod*"
+
+# Pipeline from category
+Get-VergeTagCategory -Name "Environment" | Get-VergeTag
+
+# View tags with category info
+Get-VergeTag | Format-Table Name, CategoryName, Description
+```
+
+---
+
+### New-VergeTag
+
+Creates a new tag within a category.
+
+**Syntax:**
+```powershell
+New-VergeTag -Name <String> -Category <Object> [-Description <String>] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Create environment tags
+New-VergeTag -Name "Production" -Category "Environment" -Description "Production workloads"
+New-VergeTag -Name "Development" -Category "Environment" -Description "Development workloads"
+
+# Create and return the tag
+$tag = New-VergeTag -Name "WebServer" -Category "Application" -PassThru
+```
+
+---
+
+### Set-VergeTag
+
+Modifies a tag.
+
+**Syntax:**
+```powershell
+Set-VergeTag -Name <String> [-Description <String>] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Update description
+Set-VergeTag -Name "Production" -Description "Production environment - critical workloads"
+```
+
+---
+
+### Remove-VergeTag
+
+Deletes a tag and all its assignments.
+
+**Syntax:**
+```powershell
+Remove-VergeTag -Name <String> [-Confirm:$false]
+```
+
+**Examples:**
+
+```powershell
+# Remove a tag
+Remove-VergeTag -Name "OldTag"
+
+# Remove all tags in a category
+Get-VergeTag -Category "OldCategory" | Remove-VergeTag -Confirm:$false
+```
+
+## Tag Members
+
+Tag members represent the assignment of tags to resources.
+
+### Get-VergeTagMember
+
+Lists tag assignments.
+
+**Syntax:**
+```powershell
+Get-VergeTagMember -Tag <Object> [-ResourceType <String>]
+Get-VergeTagMember -Key <Int32>
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Tag` | Object | Yes* | Tag name, key, or object |
+| `-ResourceType` | String | No | Filter by type: vms, vnets, tenants, etc. |
+| `-Key` | Int32 | Yes* | Tag member assignment key |
+
+**Examples:**
+
+```powershell
+# List all resources with a tag
+Get-VergeTagMember -Tag "Production"
+
+# List only VMs with a tag
+Get-VergeTagMember -Tag "Production" -ResourceType vms
+
+# Pipeline from tag
+Get-VergeTag -Name "Production" | Get-VergeTagMember
+
+# View assignments
+Get-VergeTagMember -Tag "Production" | Format-Table TagName, ResourceType, ResourceKey, ResourceRef
+
+# Count resources per tag
+Get-VergeTag -Category "Environment" | ForEach-Object {
+    $members = Get-VergeTagMember -Tag $_.Name
+    [PSCustomObject]@{
+        Tag   = $_.Name
+        Count = $members.Count
+    }
+} | Format-Table
+```
+
+---
+
+### Add-VergeTagMember
+
+Assigns a tag to a resource.
+
+**Syntax:**
+```powershell
+Add-VergeTagMember -Tag <Object> -VM <Object> [-PassThru]
+Add-VergeTagMember -Tag <Object> -Network <Object> [-PassThru]
+Add-VergeTagMember -Tag <Object> -Tenant <Object> [-PassThru]
+Add-VergeTagMember -Tag <Object> -ResourceType <String> -ResourceKey <Int32> [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Tag a VM by name
+Add-VergeTagMember -Tag "Production" -VM "WebServer01"
+
+# Tag via pipeline from Get-VergeVM
+Get-VergeVM -Name "Web*" | Add-VergeTagMember -Tag "WebServer"
+
+# Tag a network
+Add-VergeTagMember -Tag "Production" -Network "DMZ"
+
+# Tag a tenant
+Add-VergeTagMember -Tag "Production" -Tenant "CustomerA"
+
+# Generic resource tagging
+Add-VergeTagMember -Tag "Production" -ResourceType vms -ResourceKey 123
+
+# Bulk tag all VMs in a cluster
+Get-VergeVM -Cluster "Prod-Cluster" | ForEach-Object {
+    Add-VergeTagMember -Tag "Production" -VM $_
+}
+```
+
+---
+
+### Remove-VergeTagMember
+
+Removes a tag from a resource.
+
+**Syntax:**
+```powershell
+Remove-VergeTagMember -Key <Int32> [-Confirm:$false]
+Remove-VergeTagMember -Tag <Object> -VM <Object> [-Confirm:$false]
+Remove-VergeTagMember -Tag <Object> -Network <Object> [-Confirm:$false]
+Remove-VergeTagMember -TagMember <Object> [-Confirm:$false]
+```
+
+**Examples:**
+
+```powershell
+# Remove tag from VM by specifying both
+Remove-VergeTagMember -Tag "Development" -VM "WebServer01"
+
+# Remove by tag member key
+Remove-VergeTagMember -Key 42 -Confirm:$false
+
+# Remove all assignments for a tag via pipeline
+Get-VergeTagMember -Tag "Staging" | Remove-VergeTagMember -Confirm:$false
+
+# Remove without confirmation
+Remove-VergeTagMember -Tag "Production" -Network "OldNetwork" -Confirm:$false
+```
+
 ## Common Workflows
+
+### Tagging Workflow
+
+```powershell
+# 1. Create tag structure
+New-VergeTagCategory -Name "Environment" -TaggableVMs -SingleTagSelection
+New-VergeTag -Name "Production" -Category "Environment"
+New-VergeTag -Name "Development" -Category "Environment"
+
+# 2. Tag resources
+Get-VergeVM -Name "Prod-*" | ForEach-Object {
+    Add-VergeTagMember -Tag "Production" -VM $_
+}
+
+# 3. Query by tag
+Get-VergeTagMember -Tag "Production" -ResourceType vms
+
+# 4. Generate report
+Get-VergeTag -Category "Environment" | ForEach-Object {
+    $count = (Get-VergeTagMember -Tag $_.Name -ResourceType vms).Count
+    [PSCustomObject]@{ Environment = $_.Name; VMCount = $count }
+} | Format-Table
+```
 
 ### System Health Check
 

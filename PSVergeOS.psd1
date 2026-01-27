@@ -272,6 +272,11 @@
         'Set-VergeTag'
         'Remove-VergeTag'
 
+        # Tag Members
+        'Get-VergeTagMember'
+        'Add-VergeTagMember'
+        'Remove-VergeTagMember'
+
         # Tasks/Monitoring
         'Get-VergeTask'
         'Wait-VergeTask'
