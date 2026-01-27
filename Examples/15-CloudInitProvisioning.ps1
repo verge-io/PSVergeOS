@@ -103,10 +103,10 @@ Write-Host ""
 
 #region Create VM
 # ============================================================================
-# STEP 1: CREATE THE VIRTUAL MACHINE
+# STEP 1: CREATE THE VIRTUAL MACHINE WITH CLOUD-INIT ENABLED
 # ============================================================================
 
-Write-Host "Creating VM '$VMName'..." -ForegroundColor Cyan
+Write-Host "Creating VM '$VMName' with cloud-init..." -ForegroundColor Cyan
 
 $vm = New-VergeVM `
     -Name $VMName `
@@ -116,9 +116,11 @@ $vm = New-VergeVM `
     -OSFamily Linux `
     -UEFI `
     -GuestAgent `
+    -CloudInit ConfigDrive `
     -PassThru
 
 Write-Host "  VM created (Key: $($vm.Key))" -ForegroundColor Green
+Write-Host "  Cloud-init datasource: Config Drive v2" -ForegroundColor Green
 Write-Host ""
 
 #endregion
