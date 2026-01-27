@@ -12,7 +12,7 @@ function Get-VergeDNSRecord {
     .PARAMETER ZoneKey
         The unique key of the DNS zone to query records from.
 
-    .PARAMETER Host
+    .PARAMETER HostName
         Filter by host/name. Supports wildcards (* and ?).
 
     .PARAMETER Type
@@ -35,7 +35,7 @@ function Get-VergeDNSRecord {
         Gets all A records from zone with key 123.
 
     .EXAMPLE
-        Get-VergeDNSRecord -ZoneKey 123 -Host "www*"
+        Get-VergeDNSRecord -ZoneKey 123 -HostName "www*"
 
         Gets all records starting with "www".
 
@@ -58,7 +58,7 @@ function Get-VergeDNSRecord {
 
         [Parameter()]
         [SupportsWildcards()]
-        [string]$Host,
+        [string]$HostName,
 
         [Parameter()]
         [ValidateSet('A', 'AAAA', 'CNAME', 'MX', 'NS', 'PTR', 'SRV', 'TXT', 'CAA')]
@@ -101,8 +101,8 @@ function Get-VergeDNSRecord {
             $filterParts += "`$key eq $Key"
         }
 
-        if ($Host -and -not [WildcardPattern]::ContainsWildcardCharacters($Host)) {
-            $filterParts += "host eq '$Host'"
+        if ($HostName -and -not [WildcardPattern]::ContainsWildcardCharacters($HostName)) {
+            $filterParts += "host eq '$HostName'"
         }
 
         if ($Type) {
@@ -136,8 +136,8 @@ function Get-VergeDNSRecord {
             }
 
             # Apply wildcard filtering if needed
-            if ($Host -and [WildcardPattern]::ContainsWildcardCharacters($Host)) {
-                $records = $records | Where-Object { $_.host -like $Host }
+            if ($HostName -and [WildcardPattern]::ContainsWildcardCharacters($HostName)) {
+                $records = $records | Where-Object { $_.host -like $HostName }
             }
 
             foreach ($record in $records) {
