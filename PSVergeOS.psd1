@@ -6,7 +6,7 @@
     RootModule = 'PSVergeOS.psm1'
 
     # Version number of this module
-    ModuleVersion = '1.0.1'
+    ModuleVersion = '1.1.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core')
@@ -374,7 +374,15 @@
             Readme = 'README.md'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Updated module manifest metadata and added GitHub Actions CI/CD workflow for automated PowerShell Gallery publishing.'
+            ReleaseNotes = @'
+v1.1.0 - New Features:
+- Certificate management: Get/New/Set/Remove/Update-VergeCertificate for SSL/TLS certificates (Manual, Let's Encrypt, Self-Signed)
+- Cloud-init provisioning: Get/New/Set/Remove-VergeCloudInitFile for automated VM provisioning
+- Webhook integration: Get/New/Set/Remove-VergeWebhook, Send-VergeWebhook, Get-VergeWebhookHistory for external notifications
+- Resource groups: Get-VergeResourceGroup for GPU, PCI, USB, and SR-IOV device management
+- New-VergeVM now supports -CloudInit parameter for cloud-init enabled VM creation
+- New example scripts: Certificate Management, Cloud-Init Provisioning, Webhook Integration
+'@
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
