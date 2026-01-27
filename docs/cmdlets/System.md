@@ -1014,3 +1014,338 @@ if ($cert.PrivateKey) {
     $cert.PrivateKey | Set-Content "./backup/$($cert.Domain)-$timestamp.key"
 }
 ```
+
+## Webhooks
+
+Cmdlets for managing webhook URL configurations that send notifications to external systems like Slack, Microsoft Teams, or custom APIs.
+
+### Get-VergeWebhook
+
+Lists webhook URL configurations.
+
+**Syntax:**
+```powershell
+Get-VergeWebhook [-Name <String>] [-Key <Int32>] [-AuthorizationType <String>]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Name` | String | No | Filter by name (supports wildcards) |
+| `-Key` | Int32 | No | Get webhook by unique key |
+| `-AuthorizationType` | String | No | Filter by auth type: None, Basic, Bearer, ApiKey |
+
+**Examples:**
+
+```powershell
+# List all webhooks
+Get-VergeWebhook
+
+# View webhook details
+Get-VergeWebhook | Format-Table Name, URL, AuthorizationType, Timeout
+
+# Get specific webhook
+Get-VergeWebhook -Name "slack-alerts"
+
+# Find webhooks by auth type
+Get-VergeWebhook -AuthorizationType Bearer
+```
+
+---
+
+### New-VergeWebhook
+
+Creates a new webhook URL configuration.
+
+**Syntax:**
+```powershell
+New-VergeWebhook -Name <String> -URL <String> [-Headers <Object>]
+    [-AuthorizationType <String>] [-AuthorizationValue <String>]
+    [-Credential <PSCredential>] [-AllowInsecure] [-Timeout <Int32>]
+    [-Retries <Int32>] [-PassThru]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Name` | String | Yes | Unique webhook name |
+| `-URL` | String | Yes | Webhook endpoint URL |
+| `-Headers` | Object | No | Custom headers (hashtable or JSON string) |
+| `-AuthorizationType` | String | No | None, Basic, Bearer, or ApiKey |
+| `-AuthorizationValue` | String | No | Token/key for Bearer or ApiKey auth |
+| `-Credential` | PSCredential | No | Credentials for Basic auth |
+| `-AllowInsecure` | Switch | No | Allow self-signed certificates |
+| `-Timeout` | Int32 | No | Request timeout in seconds |
+| `-Retries` | Int32 | No | Number of retry attempts |
+| `-PassThru` | Switch | No | Return the created webhook |
+
+**Examples:**
+
+```powershell
+# Create a Slack webhook
+New-VergeWebhook -Name "slack-alerts" `
+    -URL "https://hooks.slack.com/services/YOUR/WEBHOOK/URL" `
+    -Timeout 10 -Retries 3
+
+# Create webhook with Bearer token
+New-VergeWebhook -Name "monitoring-api" `
+    -URL "https://api.monitoring.example.com/events" `
+    -AuthorizationType Bearer `
+    -AuthorizationValue "your-api-token"
+
+# Create webhook with custom headers
+$headers = @{
+    'Content-Type' = 'application/json'
+    'X-Source'     = 'VergeOS'
+}
+New-VergeWebhook -Name "custom-api" `
+    -URL "https://api.example.com/webhook" `
+    -Headers $headers `
+    -AuthorizationType ApiKey `
+    -AuthorizationValue "sk-your-api-key"
+
+# Create webhook with Basic auth
+$cred = Get-Credential
+New-VergeWebhook -Name "basic-auth-hook" `
+    -URL "https://api.example.com/hook" `
+    -AuthorizationType Basic `
+    -Credential $cred
+```
+
+---
+
+### Set-VergeWebhook
+
+Modifies webhook configuration.
+
+**Syntax:**
+```powershell
+Set-VergeWebhook -Key <Int32> [-Name <String>] [-URL <String>]
+    [-Headers <Object>] [-AuthorizationType <String>]
+    [-AuthorizationValue <String>] [-AllowInsecure <Boolean>]
+    [-Timeout <Int32>] [-Retries <Int32>] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Update timeout and retries
+Set-VergeWebhook -Key 1 -Timeout 20 -Retries 5
+
+# Update authentication
+Set-VergeWebhook -Key 1 -AuthorizationType Bearer -AuthorizationValue "new-token"
+
+# Update via pipeline
+Get-VergeWebhook -Name "slack-alerts" | Set-VergeWebhook -Timeout 30
+
+# Enable insecure connections
+Set-VergeWebhook -Key 1 -AllowInsecure $true
+```
+
+---
+
+### Remove-VergeWebhook
+
+Deletes a webhook configuration.
+
+**Syntax:**
+```powershell
+Remove-VergeWebhook -Key <Int32> [-Confirm:$false]
+Remove-VergeWebhook -Name <String> [-Confirm:$false]
+Remove-VergeWebhook -InputObject <Object> [-Confirm:$false]
+```
+
+**Examples:**
+
+```powershell
+# Remove by key
+Remove-VergeWebhook -Key 1
+
+# Remove by name
+Remove-VergeWebhook -Name "old-webhook" -Confirm:$false
+
+# Remove via pipeline
+Get-VergeWebhook -Name "test-*" | Remove-VergeWebhook -Confirm:$false
+```
+
+---
+
+### Send-VergeWebhook
+
+Sends a test message to a webhook.
+
+**Syntax:**
+```powershell
+Send-VergeWebhook -Key <Int32> [-Message <Object>]
+Send-VergeWebhook -Name <String> [-Message <Object>]
+Send-VergeWebhook -InputObject <Object> [-Message <Object>]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Key` | Int32 | Yes* | Webhook key |
+| `-Name` | String | Yes* | Webhook name |
+| `-InputObject` | Object | Yes* | Webhook from pipeline |
+| `-Message` | Object | No | Message payload (hashtable or JSON string) |
+
+**Examples:**
+
+```powershell
+# Send default test message
+Send-VergeWebhook -Name "slack-alerts"
+
+# Send custom Slack message
+$msg = @{
+    text   = "VergeOS Alert: Test notification"
+    blocks = @(
+        @{
+            type = "section"
+            text = @{
+                type = "mrkdwn"
+                text = "*VergeOS Notification*`nTest message from webhook integration."
+            }
+        }
+    )
+}
+Send-VergeWebhook -Name "slack-alerts" -Message $msg
+
+# Send JSON message to API
+$apiMsg = @{
+    event     = "test"
+    timestamp = (Get-Date).ToString("o")
+    source    = "VergeOS"
+}
+Send-VergeWebhook -Name "monitoring-api" -Message $apiMsg
+```
+
+---
+
+### Get-VergeWebhookHistory
+
+Retrieves webhook delivery history.
+
+**Syntax:**
+```powershell
+Get-VergeWebhookHistory [-WebhookKey <Int32>] [-WebhookName <String>]
+    [-Status <String>] [-Pending] [-Failed] [-Limit <Int32>]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-WebhookKey` | Int32 | No | Filter by webhook key |
+| `-WebhookName` | String | No | Filter by webhook name |
+| `-Status` | String | No | Filter: Queued, Running, Sent, Error |
+| `-Pending` | Switch | No | Show only pending (queued/running) |
+| `-Failed` | Switch | No | Show only failed messages |
+| `-Limit` | Int32 | No | Maximum entries to return (default: 100) |
+
+**Examples:**
+
+```powershell
+# View recent history
+Get-VergeWebhookHistory -Limit 10 | Format-Table WebhookName, Status, StatusInfo, Created
+
+# Check failed deliveries
+Get-VergeWebhookHistory -Failed | Format-Table WebhookName, StatusInfo, Created
+
+# Check pending messages
+Get-VergeWebhookHistory -Pending
+
+# History for specific webhook
+Get-VergeWebhookHistory -WebhookName "slack-alerts" -Limit 5
+```
+
+## Resource Groups
+
+Cmdlets for viewing hardware resource groups (GPU, PCI, USB, SR-IOV NIC, vGPU) that can be assigned to VMs.
+
+### Get-VergeResourceGroup
+
+Lists resource groups.
+
+**Syntax:**
+```powershell
+Get-VergeResourceGroup [-Name <String>] [-Key <Int32>] [-UUID <String>]
+    [-Type <String>] [-Class <String>] [-Enabled <Boolean>]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Name` | String | No | Filter by name (supports wildcards) |
+| `-Key` | Int32 | No | Get by unique key |
+| `-UUID` | String | No | Get by UUID |
+| `-Type` | String | No | Filter: PCI, SRIOVNIC, USB, HostGPU, NVIDIAvGPU |
+| `-Class` | String | No | Filter: GPU, vGPU, Storage, HID, USB, Network, etc. |
+| `-Enabled` | Boolean | No | Filter by enabled status |
+
+**Examples:**
+
+```powershell
+# List all resource groups
+Get-VergeResourceGroup
+
+# View resource groups summary
+Get-VergeResourceGroup | Format-Table Name, Type, Class, Enabled
+
+# Get GPU resource groups
+Get-VergeResourceGroup -Type HostGPU
+
+# Get enabled network resource groups
+Get-VergeResourceGroup -Class Network -Enabled $true
+
+# Find by name pattern
+Get-VergeResourceGroup -Name "*nvidia*"
+```
+
+## Webhook Workflows
+
+### Slack Integration
+
+```powershell
+# Setup Slack webhook
+New-VergeWebhook -Name "slack-alerts" `
+    -URL "https://hooks.slack.com/services/YOUR/WEBHOOK/URL" `
+    -Timeout 10 -Retries 3
+
+# Send notification
+$msg = @{
+    text = ":warning: VergeOS Alert"
+    attachments = @(
+        @{
+            color = "danger"
+            title = "High CPU Usage"
+            text  = "Production cluster at 95% CPU"
+        }
+    )
+}
+Send-VergeWebhook -Name "slack-alerts" -Message $msg
+
+# Check delivery
+Get-VergeWebhookHistory -WebhookName "slack-alerts" -Limit 1
+```
+
+### Webhook Health Check
+
+```powershell
+# Check for failed webhooks
+$failed = Get-VergeWebhookHistory -Failed -Limit 20
+if ($failed) {
+    Write-Warning "Failed webhook deliveries:"
+    $failed | Group-Object WebhookName | ForEach-Object {
+        Write-Host "  $($_.Name): $($_.Count) failures"
+    }
+}
+
+# Retry pending messages (by resending)
+Get-VergeWebhookHistory -Pending | ForEach-Object {
+    Write-Host "Pending: $($_.WebhookName) - $($_.Status)"
+}
+```

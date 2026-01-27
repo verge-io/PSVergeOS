@@ -156,6 +156,11 @@ PSVergeOS includes over 200 cmdlets organized by functional area.
 | `New-VergeNIC` | Add a NIC to a VM |
 | `Set-VergeNIC` | Modify NIC settings |
 | `Remove-VergeNIC` | Remove a NIC from a VM |
+| `Get-VergeCloudInitFile` | List cloud-init files for a VM |
+| `Get-VergeCloudInitFileContent` | Get cloud-init file contents |
+| `New-VergeCloudInitFile` | Create a cloud-init file |
+| `Set-VergeCloudInitFile` | Modify cloud-init file |
+| `Remove-VergeCloudInitFile` | Delete a cloud-init file |
 
 ### Networking
 
@@ -338,6 +343,23 @@ PSVergeOS includes over 200 cmdlets organized by functional area.
 | `Add-VergeTagMember` | Assign a tag to a resource |
 | `Remove-VergeTagMember` | Remove a tag from a resource |
 
+### Webhooks
+
+| Cmdlet | Description |
+|--------|-------------|
+| `Get-VergeWebhook` | List webhook URL configurations |
+| `New-VergeWebhook` | Create a webhook (supports Basic, Bearer, ApiKey auth) |
+| `Set-VergeWebhook` | Modify webhook settings |
+| `Remove-VergeWebhook` | Delete a webhook configuration |
+| `Send-VergeWebhook` | Send a test message to a webhook |
+| `Get-VergeWebhookHistory` | View webhook delivery queue and history |
+
+### Resource Groups
+
+| Cmdlet | Description |
+|--------|-------------|
+| `Get-VergeResourceGroup` | List hardware device groups (GPU, PCI, USB, SR-IOV) |
+
 ### Monitoring & Tasks
 
 | Cmdlet | Description |
@@ -409,6 +431,9 @@ The `Examples/` directory contains ready-to-use scripts demonstrating common wor
 | **[11-RestoreFromCloudSnapshot.ps1](Examples/11-RestoreFromCloudSnapshot.ps1)** | Disaster recovery: restore VMs and tenants from cloud snapshots |
 | **[12-InventoryReport.ps1](Examples/12-InventoryReport.ps1)** | Infrastructure inventory: export VMs, networks, storage to Excel |
 | **[13-TagManagement.ps1](Examples/13-TagManagement.ps1)** | Tag management: categories, tags, resource tagging, compliance reporting |
+| **[14-CertificateManagement.ps1](Examples/14-CertificateManagement.ps1)** | Certificate lifecycle: self-signed, Let's Encrypt, manual uploads, renewal workflows |
+| **[15-CloudInitProvisioning.ps1](Examples/15-CloudInitProvisioning.ps1)** | Cloud-init provisioning: upload files, attach to VMs, automated VM deployment |
+| **[16-WebhookIntegration.ps1](Examples/16-WebhookIntegration.ps1)** | Webhook integration: Slack/Teams notifications, API callbacks, delivery history |
 
 ## Development
 
