@@ -312,6 +312,22 @@ PSVergeOS includes over 200 cmdlets organized by functional area.
 | `Get-VergeSystemSetting` | List system settings |
 | `Get-VergeLicense` | Get license information |
 
+### Tags
+
+| Cmdlet | Description |
+|--------|-------------|
+| `Get-VergeTagCategory` | List tag categories |
+| `New-VergeTagCategory` | Create a tag category |
+| `Set-VergeTagCategory` | Modify tag category settings |
+| `Remove-VergeTagCategory` | Delete a tag category |
+| `Get-VergeTag` | List tags |
+| `New-VergeTag` | Create a tag |
+| `Set-VergeTag` | Modify tag settings |
+| `Remove-VergeTag` | Delete a tag |
+| `Get-VergeTagMember` | List tag assignments |
+| `Add-VergeTagMember` | Assign a tag to a resource |
+| `Remove-VergeTagMember` | Remove a tag from a resource |
+
 ### Monitoring & Tasks
 
 | Cmdlet | Description |
@@ -381,6 +397,8 @@ The `Examples/` directory contains ready-to-use scripts demonstrating common wor
 | **[09-TaskManagement.ps1](Examples/09-TaskManagement.ps1)** | Task monitoring: list, wait, cancel, and track long-running operations |
 | **[10-AlarmsAndLogs.ps1](Examples/10-AlarmsAndLogs.ps1)** | Monitoring: alarms, acknowledgment, system logs, health checks |
 | **[11-RestoreFromCloudSnapshot.ps1](Examples/11-RestoreFromCloudSnapshot.ps1)** | Disaster recovery: restore VMs and tenants from cloud snapshots |
+| **[12-InventoryReport.ps1](Examples/12-InventoryReport.ps1)** | Infrastructure inventory: export VMs, networks, storage to Excel |
+| **[13-TagManagement.ps1](Examples/13-TagManagement.ps1)** | Tag management: categories, tags, resource tagging, compliance reporting |
 
 ## Development
 
