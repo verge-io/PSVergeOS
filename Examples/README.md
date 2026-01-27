@@ -244,6 +244,46 @@ Get-VergeCertificate | Where-Object { $_.DaysUntilExpiry -lt 30 } | Update-Verge
 New-VergeCertificate -DomainName "app.local" -Type SelfSigned -PassThru
 ```
 
+---
+
+### 15-CloudInitProvisioning.ps1
+**Cloud-Init Automated VM Provisioning**
+
+VM provisioning with cloud-init configuration:
+- Managing cloud-init files (user-data, meta-data, network-config)
+- Uploading and viewing cloud-init configurations
+- Creating VMs with cloud-init for automated setup
+- Ubuntu and other cloud-init enabled OS provisioning
+- Hostname, user creation, and package installation automation
+
+```powershell
+# Quick examples
+Get-VergeCloudInitFile | Format-Table Name, Type, Size
+New-VergeCloudInitFile -Name "ubuntu-init" -Type UserData -Content $cloudConfig
+New-VergeVM -Name "AutoVM" -CloudInit "ubuntu-init" -Cluster "Production"
+```
+
+---
+
+### 16-WebhookIntegration.ps1
+**Webhook Integration for Event Notifications**
+
+Webhook configuration for external notifications:
+- Creating webhooks for Slack, Microsoft Teams, or custom APIs
+- Configuring authentication (None, Basic, Bearer, ApiKey)
+- Adding custom headers for API integration
+- Sending test messages to verify connectivity
+- Monitoring webhook delivery history and failures
+- Managing webhook lifecycle (create, update, delete)
+
+```powershell
+# Quick examples
+Get-VergeWebhook | Format-Table Name, URL, AuthorizationType
+New-VergeWebhook -Name "slack-alerts" -URL "https://hooks.slack.com/..." -Timeout 10
+Send-VergeWebhook -Name "slack-alerts" -Message @{ text = "Test notification" }
+Get-VergeWebhookHistory -WebhookName "slack-alerts" -Limit 10
+```
+
 ## Running the Examples
 
 1. **Connect first** - All examples assume an active connection:

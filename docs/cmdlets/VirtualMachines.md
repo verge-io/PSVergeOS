@@ -532,3 +532,252 @@ Get-VergeVM | Select-Object Name, PowerState, CPUCores,
     @{N='RAM_GB';E={$_.RAM/1024}}, Cluster, Node |
     Export-Csv "vm-inventory.csv" -NoTypeInformation
 ```
+
+## Cloud-Init Cmdlets
+
+Cloud-init files provide automated VM provisioning through user-data, meta-data, and network configuration files.
+
+### Get-VergeCloudInitFile
+
+Lists cloud-init files.
+
+**Syntax:**
+```powershell
+Get-VergeCloudInitFile [-VMId <Int32>] [-Name <String>] [-Render <String>] [-IncludeContents]
+Get-VergeCloudInitFile -Key <Int32>
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-VMId` | Int32 | No | Filter by VM ID |
+| `-Name` | String | No | Filter by name (supports wildcards) |
+| `-Key` | Int32 | No | Get by unique key |
+| `-Render` | String | No | Filter: No, Variables, Jinja2 |
+| `-IncludeContents` | Switch | No | Include file contents |
+
+**Examples:**
+
+```powershell
+# List all cloud-init files
+Get-VergeCloudInitFile
+
+# View file summary
+Get-VergeCloudInitFile | Format-Table Name, FileSize, Render, Modified
+
+# Get files for a specific VM
+Get-VergeCloudInitFile -VMId 123
+
+# Get file with contents
+Get-VergeCloudInitFile -Key 5 -IncludeContents
+
+# Find files using Jinja2 templates
+Get-VergeCloudInitFile -Render Jinja2
+```
+
+---
+
+### Get-VergeCloudInitFileContent
+
+Gets cloud-init file contents directly.
+
+**Syntax:**
+```powershell
+Get-VergeCloudInitFileContent -Key <Int32>
+Get-VergeCloudInitFileContent -Name <String> -VMId <Int32>
+```
+
+**Examples:**
+
+```powershell
+# Get contents by key
+Get-VergeCloudInitFileContent -Key 5
+
+# View user-data for a VM
+$content = Get-VergeCloudInitFile -VMId 123 -Name "/user-data" | Get-VergeCloudInitFileContent
+Write-Host $content
+```
+
+---
+
+### New-VergeCloudInitFile
+
+Creates a new cloud-init file.
+
+**Syntax:**
+```powershell
+New-VergeCloudInitFile -VMId <Int32> -Name <String> [-Contents <String>] [-Render <String>] [-PassThru]
+New-VergeCloudInitFile -VM <Object> -Name <String> [-Contents <String>] [-Render <String>] [-PassThru]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-VMId` | Int32 | Yes* | Target VM ID |
+| `-VM` | Object | Yes* | VM object from pipeline |
+| `-Name` | String | Yes | File name (e.g., /user-data, /meta-data) |
+| `-Contents` | String | No | File contents (max 64KB) |
+| `-Render` | String | No | No, Variables, or Jinja2 (default: No) |
+| `-PassThru` | Switch | No | Return created file |
+
+**Examples:**
+
+```powershell
+# Create a simple user-data file
+$userData = @"
+#cloud-config
+hostname: myserver
+packages:
+  - nginx
+  - git
+"@
+New-VergeCloudInitFile -VMId 123 -Name "/user-data" -Contents $userData
+
+# Create with Jinja2 templating
+$metaData = @"
+instance-id: {{ vm_name }}
+local-hostname: {{ vm_name }}
+"@
+New-VergeCloudInitFile -VMId 123 -Name "/meta-data" -Contents $metaData -Render Jinja2
+
+# Create via pipeline
+Get-VergeVM -Name "MyVM" | New-VergeCloudInitFile -Name "/user-data" -Contents $userData -PassThru
+```
+
+---
+
+### Set-VergeCloudInitFile
+
+Modifies a cloud-init file.
+
+**Syntax:**
+```powershell
+Set-VergeCloudInitFile -Key <Int32> [-Name <String>] [-Contents <String>] [-Render <String>] [-PassThru]
+Set-VergeCloudInitFile -InputObject <Object> [-Name <String>] [-Contents <String>] [-Render <String>] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Update file contents
+$newContents = Get-Content ./updated-user-data.yaml -Raw
+Set-VergeCloudInitFile -Key 5 -Contents $newContents
+
+# Change render type
+Set-VergeCloudInitFile -Key 5 -Render Jinja2
+
+# Update via pipeline
+Get-VergeCloudInitFile -Key 5 | Set-VergeCloudInitFile -Contents $newContents -PassThru
+```
+
+---
+
+### Remove-VergeCloudInitFile
+
+Deletes a cloud-init file.
+
+**Syntax:**
+```powershell
+Remove-VergeCloudInitFile -Key <Int32> [-Confirm:$false]
+Remove-VergeCloudInitFile -InputObject <Object> [-Confirm:$false]
+```
+
+**Examples:**
+
+```powershell
+# Remove by key
+Remove-VergeCloudInitFile -Key 5
+
+# Remove via pipeline
+Get-VergeCloudInitFile -VMId 123 | Remove-VergeCloudInitFile -Confirm:$false
+
+# Remove all cloud-init files for a VM
+Get-VergeCloudInitFile -VMId 123 | Remove-VergeCloudInitFile -Confirm:$false
+```
+
+## Cloud-Init Workflows
+
+### Ubuntu Server Provisioning
+
+```powershell
+# Create VM
+$vm = New-VergeVM -Name "Ubuntu-Server" -CPUCores 2 -RAM 4096 -OSFamily Linux -UEFI -PassThru
+
+# Create cloud-init user-data
+$userData = @"
+#cloud-config
+hostname: ubuntu-server
+users:
+  - name: admin
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-rsa AAAA... admin@example.com
+packages:
+  - docker.io
+  - nginx
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+"@
+
+New-VergeCloudInitFile -VMId $vm.Key -Name "/user-data" -Contents $userData
+
+# Create meta-data with variables
+$metaData = @"
+instance-id: {{ vm_name }}
+local-hostname: {{ vm_name }}
+"@
+
+New-VergeCloudInitFile -VMId $vm.Key -Name "/meta-data" -Contents $metaData -Render Variables
+
+# Start VM
+Start-VergeVM -Name "Ubuntu-Server"
+```
+
+### Network Configuration
+
+```powershell
+# Static IP configuration
+$networkConfig = @"
+version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 192.168.1.100/24
+    gateway4: 192.168.1.1
+    nameservers:
+      addresses:
+        - 8.8.8.8
+        - 8.8.4.4
+"@
+
+New-VergeCloudInitFile -VMId 123 -Name "/network-config" -Contents $networkConfig
+```
+
+### Template-Based Provisioning
+
+```powershell
+# Create VMs from template with cloud-init
+$servers = @("web1", "web2", "web3")
+
+foreach ($name in $servers) {
+    # Clone from template
+    $vm = New-VergeVMClone -SourceVM "Ubuntu-Template" -Name $name -PassThru
+
+    # Create cloud-init files
+    $userData = @"
+#cloud-config
+hostname: $name
+fqdn: $name.example.com
+"@
+
+    New-VergeCloudInitFile -VMId $vm.Key -Name "/user-data" -Contents $userData
+
+    # Start the VM
+    Start-VergeVM -Key $vm.Key
+}
+```
