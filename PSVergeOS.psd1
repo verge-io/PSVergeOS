@@ -260,6 +260,12 @@
         'Get-VergeNodeDevice'
         'Get-VergeInventory'
 
+        # Tag Categories
+        'Get-VergeTagCategory'
+        'New-VergeTagCategory'
+        'Set-VergeTagCategory'
+        'Remove-VergeTagCategory'
+
         # Tasks/Monitoring
         'Get-VergeTask'
         'Wait-VergeTask'
