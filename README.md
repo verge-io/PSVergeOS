@@ -312,6 +312,16 @@ PSVergeOS includes over 200 cmdlets organized by functional area.
 | `Get-VergeSystemSetting` | List system settings |
 | `Get-VergeLicense` | Get license information |
 
+### Certificates
+
+| Cmdlet | Description |
+|--------|-------------|
+| `Get-VergeCertificate` | List SSL/TLS certificates |
+| `New-VergeCertificate` | Create a certificate (Manual, Let's Encrypt, or Self-Signed) |
+| `Set-VergeCertificate` | Modify certificate properties |
+| `Remove-VergeCertificate` | Delete a certificate |
+| `Update-VergeCertificate` | Renew or regenerate a certificate |
+
 ### Tags
 
 | Cmdlet | Description |

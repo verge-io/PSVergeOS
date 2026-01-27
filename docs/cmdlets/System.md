@@ -741,3 +741,276 @@ Write-Host "GPUs: $($gpu.Count)"
 Write-Host "`nPCI Devices by Class:"
 $pci | Group-Object Class | Sort-Object Count -Descending | Format-Table Name, Count
 ```
+
+## SSL/TLS Certificates
+
+Cmdlets for managing SSL/TLS certificates including manual uploads, Let's Encrypt (ACME), and self-signed certificates.
+
+### Get-VergeCertificate
+
+Lists SSL/TLS certificates with filtering options.
+
+**Syntax:**
+```powershell
+Get-VergeCertificate [-Domain <String>] [-Key <Int32>] [-Type <String>] [-Valid] [-IncludeKeys]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Domain` | String | No | Filter by domain (supports wildcards) |
+| `-Key` | Int32 | No | Get certificate by unique key |
+| `-Type` | String | No | Filter by type: Manual, LetsEncrypt, SelfSigned |
+| `-Valid` | Switch | No | Show only valid (unexpired) certificates |
+| `-IncludeKeys` | Switch | No | Include public/private key material |
+
+**Examples:**
+
+```powershell
+# List all certificates
+Get-VergeCertificate
+
+# View certificate summary
+Get-VergeCertificate | Format-Table Domain, Type, Valid, DaysUntilExpiry, Expires -AutoSize
+
+# Get a specific certificate
+Get-VergeCertificate -Key 1
+
+# Filter by type
+Get-VergeCertificate -Type LetsEncrypt
+Get-VergeCertificate -Type SelfSigned
+
+# Get only valid certificates
+Get-VergeCertificate -Valid
+
+# Filter by domain pattern
+Get-VergeCertificate -Domain "api*"
+
+# Include key material (use with caution)
+Get-VergeCertificate -Key 1 -IncludeKeys | Select-Object Domain, PublicKey, PrivateKey
+```
+
+---
+
+### New-VergeCertificate
+
+Creates a new SSL/TLS certificate.
+
+**Syntax:**
+```powershell
+New-VergeCertificate -DomainName <String> -Type <String> [-Description <String>]
+    [-DomainList <String[]>] [-KeyType <String>] [-RSAKeySize <String>]
+    [-PublicKey <String>] [-PrivateKey <String>] [-Chain <String>]
+    [-ACMEServer <String>] [-EABKeyId <String>] [-EABHMACKey <String>]
+    [-ContactUserId <Int32>] [-AgreeTOS] [-PassThru]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-DomainName` | String | Yes | Primary domain name |
+| `-Type` | String | Yes | Certificate type: Manual, LetsEncrypt, SelfSigned |
+| `-Description` | String | No | Certificate description |
+| `-DomainList` | String[] | No | Additional SANs |
+| `-KeyType` | String | No | ECDSA or RSA |
+| `-RSAKeySize` | String | No | RSA key size: 2048, 3072, 4096 |
+| `-PublicKey` | String | No | PEM-encoded public certificate (Manual type) |
+| `-PrivateKey` | String | No | PEM-encoded private key (Manual type) |
+| `-Chain` | String | No | PEM-encoded certificate chain (Manual type) |
+| `-ACMEServer` | String | No | ACME server URL (LetsEncrypt type) |
+| `-ContactUserId` | Int32 | No | Contact user for ACME (LetsEncrypt type) |
+| `-AgreeTOS` | Switch | No | Accept Terms of Service (LetsEncrypt type) |
+| `-PassThru` | Switch | No | Return the created certificate |
+
+**Examples:**
+
+```powershell
+# Create a self-signed certificate
+New-VergeCertificate -DomainName "internal.local" -Type SelfSigned
+
+# Create with description and return result
+$cert = New-VergeCertificate -DomainName "app.local" `
+    -Type SelfSigned `
+    -Description "Application certificate" `
+    -PassThru
+
+# Create with SANs
+New-VergeCertificate -DomainName "example.com" `
+    -Type SelfSigned `
+    -DomainList "www.example.com", "api.example.com"
+
+# Upload a manual certificate
+$publicKey = Get-Content "./cert.pem" -Raw
+$privateKey = Get-Content "./key.pem" -Raw
+New-VergeCertificate -DomainName "example.com" `
+    -Type Manual `
+    -PublicKey $publicKey `
+    -PrivateKey $privateKey
+
+# Create Let's Encrypt certificate
+New-VergeCertificate -DomainName "public.example.com" `
+    -Type LetsEncrypt `
+    -AgreeTOS `
+    -ContactUserId 1
+```
+
+---
+
+### Set-VergeCertificate
+
+Modifies certificate properties.
+
+**Syntax:**
+```powershell
+Set-VergeCertificate -Key <Int32> [-Description <String>] [-DomainList <String[]>]
+    [-PublicKey <String>] [-PrivateKey <String>] [-Chain <String>]
+    [-ACMEServer <String>] [-KeyType <String>] [-RSAKeySize <String>]
+    [-ContactUserId <Int32>] [-AgreeTOS] [-PassThru]
+```
+
+**Examples:**
+
+```powershell
+# Update description
+Set-VergeCertificate -Key 1 -Description "Production API certificate"
+
+# Update via pipeline
+Get-VergeCertificate -Key 1 | Set-VergeCertificate -Description "Updated" -PassThru
+
+# Update SANs
+Set-VergeCertificate -Key 1 -DomainList "www.example.com", "api.example.com"
+
+# Update certificate keys (manual certificates)
+$newPublicKey = Get-Content "./new-cert.pem" -Raw
+$newPrivateKey = Get-Content "./new-key.pem" -Raw
+Set-VergeCertificate -Key 1 -PublicKey $newPublicKey -PrivateKey $newPrivateKey
+```
+
+---
+
+### Remove-VergeCertificate
+
+Deletes a certificate.
+
+**Syntax:**
+```powershell
+Remove-VergeCertificate -Key <Int32> [-Confirm:$false]
+Remove-VergeCertificate -Domain <String> [-Confirm:$false]
+Remove-VergeCertificate -Certificate <Object> [-Confirm:$false]
+```
+
+**Examples:**
+
+```powershell
+# Remove by key
+Remove-VergeCertificate -Key 2
+
+# Remove without confirmation
+Remove-VergeCertificate -Key 2 -Confirm:$false
+
+# Remove via pipeline
+Get-VergeCertificate -Key 2 | Remove-VergeCertificate
+
+# Remove test certificates
+Get-VergeCertificate | Where-Object { $_.Description -like "*test*" } | Remove-VergeCertificate
+```
+
+> **Note:** The default system certificate may be protected from deletion.
+
+---
+
+### Update-VergeCertificate
+
+Renews a Let's Encrypt certificate or regenerates a self-signed certificate.
+
+**Syntax:**
+```powershell
+Update-VergeCertificate -Key <Int32> [-Force] [-PassThru]
+Update-VergeCertificate -Domain <String> [-Force] [-PassThru]
+Update-VergeCertificate -Certificate <Object> [-Force] [-PassThru]
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Key` | Int32 | Yes* | Certificate key to renew |
+| `-Domain` | String | Yes* | Certificate domain to renew |
+| `-Certificate` | Object | Yes* | Certificate object from pipeline |
+| `-Force` | Switch | No | Force renewal even if not expiring soon |
+| `-PassThru` | Switch | No | Return the renewed certificate |
+
+**Examples:**
+
+```powershell
+# Renew/regenerate by key
+Update-VergeCertificate -Key 1 -Force
+
+# Renew via pipeline
+Get-VergeCertificate -Key 1 | Update-VergeCertificate -Force
+
+# Renew and return result
+$renewed = Update-VergeCertificate -Key 1 -Force -PassThru
+$renewed | Format-List Domain, Type, Valid, Expires
+
+# Renew all certificates expiring within 30 days
+Get-VergeCertificate | Where-Object { $_.DaysUntilExpiry -lt 30 } | Update-VergeCertificate -Force
+```
+
+> **Note:** For Let's Encrypt certificates, ensure DNS/HTTP validation is properly configured.
+
+## Certificate Workflows
+
+### Certificate Expiration Monitoring
+
+```powershell
+# Find certificates expiring soon
+$expiring = Get-VergeCertificate | Where-Object {
+    $_.DaysUntilExpiry -lt 30 -and $_.DaysUntilExpiry -ge 0
+}
+if ($expiring) {
+    Write-Warning "Certificates expiring within 30 days:"
+    $expiring | Format-Table Domain, Type, DaysUntilExpiry, Expires -AutoSize
+}
+
+# Certificate health report
+$certs = Get-VergeCertificate
+[PSCustomObject]@{
+    Total    = $certs.Count
+    Valid    = ($certs | Where-Object Valid).Count
+    Expired  = ($certs | Where-Object { $_.DaysUntilExpiry -lt 0 }).Count
+    Warning  = ($certs | Where-Object { $_.DaysUntilExpiry -ge 0 -and $_.DaysUntilExpiry -lt 30 }).Count
+    Healthy  = ($certs | Where-Object { $_.DaysUntilExpiry -ge 30 }).Count
+} | Format-List
+```
+
+### Auto-Renewal Workflow
+
+```powershell
+# Renew all expiring Let's Encrypt and self-signed certificates
+Get-VergeCertificate | Where-Object {
+    $_.DaysUntilExpiry -lt 14 -and
+    $_.DaysUntilExpiry -ge 0 -and
+    $_.TypeValue -in @('letsencrypt', 'self_signed')
+} | ForEach-Object {
+    Write-Host "Renewing: $($_.Domain) (expires in $($_.DaysUntilExpiry) days)"
+    Update-VergeCertificate -Key $_.Key -Force
+}
+```
+
+### Certificate Backup
+
+```powershell
+# Export certificate with keys
+$cert = Get-VergeCertificate -Key 1 -IncludeKeys
+$timestamp = Get-Date -Format "yyyyMMdd"
+
+if ($cert.PublicKey) {
+    $cert.PublicKey | Set-Content "./backup/$($cert.Domain)-$timestamp.crt"
+}
+if ($cert.PrivateKey) {
+    $cert.PrivateKey | Set-Content "./backup/$($cert.Domain)-$timestamp.key"
+}
+```

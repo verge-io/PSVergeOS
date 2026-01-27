@@ -13,7 +13,7 @@ Complete reference documentation for all PSVergeOS cmdlets organized by function
 | [Storage](Storage.md) | NAS services, volumes, and shares | 42 |
 | [Tenants](Tenants.md) | Multi-tenant environment management | 36 |
 | [Users](Users.md) | User, group, and permission management | 19 |
-| [System](System.md) | Clusters, nodes, and system administration | 15 |
+| [System](System.md) | Clusters, nodes, certificates, and system administration | 20 |
 | [Monitoring](Monitoring.md) | Alarms, logs, and tasks | 7 |
 | [Backup](Backup.md) | Snapshots, cloud backup, and disaster recovery | 20 |
 | [Files](Files.md) | Media files, ISOs, and imports | 6 |
