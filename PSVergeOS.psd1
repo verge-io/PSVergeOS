@@ -260,6 +260,13 @@
         'Get-VergeNodeDevice'
         'Get-VergeInventory'
 
+        # Certificates
+        'Get-VergeCertificate'
+        'New-VergeCertificate'
+        'Set-VergeCertificate'
+        'Remove-VergeCertificate'
+        'Update-VergeCertificate'
+
         # Tag Categories
         'Get-VergeTagCategory'
         'New-VergeTagCategory'
