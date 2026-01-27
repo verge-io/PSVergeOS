@@ -333,6 +333,17 @@
         'Get-VergeSiteSyncSchedule'
         'New-VergeSiteSyncSchedule'
         'Remove-VergeSiteSyncSchedule'
+
+        # Webhooks
+        'Get-VergeWebhook'
+        'New-VergeWebhook'
+        'Set-VergeWebhook'
+        'Remove-VergeWebhook'
+        'Send-VergeWebhook'
+        'Get-VergeWebhookHistory'
+
+        # Resource Groups
+        'Get-VergeResourceGroup'
     )
 
     # Cmdlets to export from this module
