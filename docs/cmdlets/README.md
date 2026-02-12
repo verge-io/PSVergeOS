@@ -1,3 +1,10 @@
+---
+title: PSVergeOS Cmdlet Reference
+description: Complete reference documentation index for all PSVergeOS cmdlets organized by functional area
+tags: [reference, index, cmdlets, powershell, psverge, overview, pipeline, naming-conventions, get-help]
+categories: [Reference]
+---
+
 # PSVergeOS Cmdlet Reference
 
 Complete reference documentation for all PSVergeOS cmdlets organized by functional area.

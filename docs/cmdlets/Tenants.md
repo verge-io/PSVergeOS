@@ -1,3 +1,10 @@
+---
+title: Tenant Cmdlets
+description: Cmdlets for managing multi-tenant environments including provisioning, networking, snapshots, and VM sharing
+tags: [tenant, multi-tenant, get-vergetenant, new-vergetenant, clone, snapshot, isolation, crash-cart, shared-object, network-block, external-ip, layer2, context]
+categories: [Tenants]
+---
+
 # Tenant Cmdlets
 
 Cmdlets for managing multi-tenant environments.

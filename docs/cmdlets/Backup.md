@@ -1,3 +1,10 @@
+---
+title: Backup & Disaster Recovery Cmdlets
+description: Cmdlets for managing snapshot profiles, cloud snapshots, site synchronization, and disaster recovery
+tags: [backup, disaster-recovery, snapshot, cloud-snapshot, site-sync, replication, dr, get-vergesnapshotprofile, get-vergecloudsnapshot, get-vergesitesync, restore, retention]
+categories: [Backup]
+---
+
 # Backup & Disaster Recovery Cmdlets
 
 Cmdlets for managing snapshots, cloud backups, and site synchronization.

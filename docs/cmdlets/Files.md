@@ -1,3 +1,10 @@
+---
+title: Files & Media Cmdlets
+description: Cmdlets for managing media files, ISOs, disk images, and VM imports
+tags: [files, media, iso, import, upload, download, get-vergefile, send-vergefile, save-vergefile, import-vergevm, import-vergedrive, disk-image]
+categories: [Files]
+---
+
 # Files & Media Cmdlets
 
 Cmdlets for managing files, ISOs, and imports.

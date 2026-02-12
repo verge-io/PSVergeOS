@@ -1,3 +1,10 @@
+---
+title: Storage Cmdlets
+description: Cmdlets for managing NAS services, volumes, CIFS/NFS shares, volume sync, and storage tiers
+tags: [storage, nas, volume, cifs, smb, nfs, share, vsan, tier, snapshot, sync, get-vergenasservice, new-vergenasvolume, get-vergestoragetier, file-share]
+categories: [Storage]
+---
+
 # Storage Cmdlets
 
 Cmdlets for managing NAS services, volumes, and file shares.

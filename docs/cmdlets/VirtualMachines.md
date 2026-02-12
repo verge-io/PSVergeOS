@@ -1,3 +1,10 @@
+---
+title: Virtual Machine Cmdlets
+description: Cmdlets for managing VM lifecycle, snapshots, drives, NICs, and cloud-init provisioning
+tags: [vm, virtual-machine, get-vergevm, new-vergevm, start-vergevm, stop-vergevm, clone, snapshot, drive, nic, cloud-init, migration, power-management]
+categories: [Virtual Machines]
+---
+
 # Virtual Machine Cmdlets
 
 Cmdlets for managing virtual machine lifecycle, configuration, and hardware.

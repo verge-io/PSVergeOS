@@ -1,3 +1,10 @@
+---
+title: Networking Cmdlets
+description: Cmdlets for managing virtual networks, firewall rules, DHCP reservations, DNS records, and network diagnostics
+tags: [network, vnet, firewall, dhcp, dns, get-vergenetwork, new-vergenetwork, get-vergenetworkrule, new-vergenetworkrule, invoke-vergenetworkapply, alias, routing, diagnostics]
+categories: [Networking]
+---
+
 # Networking Cmdlets
 
 Cmdlets for managing virtual networks, firewall rules, DHCP, and DNS.
