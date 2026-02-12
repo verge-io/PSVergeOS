@@ -1,3 +1,10 @@
+---
+title: Users & Groups Cmdlets
+description: Cmdlets for managing user accounts, groups, permissions, and API keys
+tags: [user, group, permission, api-key, rbac, get-vergeuser, new-vergeuser, get-vergegroup, grant-vergepermission, access-control, onboarding]
+categories: [Users]
+---
+
 # Users & Groups Cmdlets
 
 Cmdlets for managing users, groups, and permissions.

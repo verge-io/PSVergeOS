@@ -1,3 +1,10 @@
+---
+title: Connection Cmdlets
+description: Cmdlets for establishing, managing, and switching connections to VergeOS systems
+tags: [connection, authentication, connect-vergeos, disconnect-vergeos, get-vergeconnection, set-vergeconnection, login, token, credential, session, multi-server]
+categories: [Connection]
+---
+
 # Connection Cmdlets
 
 Cmdlets for establishing and managing connections to VergeOS systems.

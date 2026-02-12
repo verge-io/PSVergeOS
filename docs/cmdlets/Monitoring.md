@@ -1,3 +1,10 @@
+---
+title: Monitoring Cmdlets
+description: Cmdlets for managing alarms, viewing system logs, and tracking long-running tasks
+tags: [monitoring, alarm, log, task, health, get-vergealarm, set-vergealarm, get-vergelog, get-vergetask, wait-vergetask, alerting]
+categories: [Monitoring]
+---
+
 # Monitoring Cmdlets
 
 Cmdlets for managing alarms, logs, and tasks.

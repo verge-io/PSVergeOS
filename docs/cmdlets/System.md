@@ -1,3 +1,10 @@
+---
+title: System Administration Cmdlets
+description: Cmdlets for managing clusters, nodes, certificates, tags, webhooks, resource groups, and system settings
+tags: [system, cluster, node, certificate, tag, webhook, resource-group, license, driver, device, get-vergecluster, get-vergenode, get-vergecertificate, get-vergetag, get-vergewebhook, maintenance, ssl, tls]
+categories: [System]
+---
+
 # System Administration Cmdlets
 
 Cmdlets for managing clusters, nodes, and system settings.

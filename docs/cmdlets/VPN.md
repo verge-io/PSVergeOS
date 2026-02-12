@@ -1,3 +1,10 @@
+---
+title: VPN Cmdlets
+description: Cmdlets for configuring IPSec and WireGuard VPN connections and peers
+tags: [vpn, ipsec, wireguard, tunnel, site-to-site, remote-access, get-vergeipsecconnection, new-vergeipsecconnection, get-vergewireguard, new-vergewireguard, peer, encryption]
+categories: [VPN]
+---
+
 # VPN Cmdlets
 
 Cmdlets for configuring IPSec and WireGuard VPN connections.
