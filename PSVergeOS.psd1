@@ -6,7 +6,7 @@
     RootModule = 'PSVergeOS.psm1'
 
     # Version number of this module
-    ModuleVersion = '1.1.0'
+    ModuleVersion = '1.1.1'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core')
@@ -21,7 +21,7 @@
     CompanyName = 'Verge.io'
 
     # Copyright statement for this module
-    Copyright = '(c) 2026 Verge.io. MIT License.'
+    Copyright = '(c) 2026 Verge.io. Apache License 2.0.'
 
     # Description of the functionality provided by this module
     Description = 'PowerShell module for managing VergeOS infrastructure. Provides cmdlets for VM lifecycle, networking, storage, and multi-tenant management through the VergeOS REST API.'
@@ -362,7 +362,7 @@
             Tags = @('VergeOS', 'Virtualization', 'Infrastructure', 'Automation', 'VM', 'Hypervisor', 'API')
 
             # SPDX license expression
-            License = 'MIT'
+            License = 'Apache-2.0'
 
             # A URL to the main website for this project
             ProjectUri = 'https://github.com/verge-io/PSVergeOS'
