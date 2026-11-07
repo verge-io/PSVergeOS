@@ -62,6 +62,15 @@ function Set-VergeVM {
     .PARAMETER Server
         The VergeOS connection to use. Defaults to the current default connection.
 
+    .PARAMETER AllowExport
+        Enable or disable allow export for a VM.
+
+    .PARAMETER NestedVirtualization
+        Enable or disable nested virtualization in a VM.
+
+    .PARAMETER Note
+        Set the note field for a VM.
+
     .EXAMPLE
         Set-VergeVM -Name "WebServer01" -CPUCores 8 -RAM 16384
 
@@ -159,7 +168,16 @@ function Set-VergeVM {
         [switch]$PassThru,
 
         [Parameter()]
-        [object]$Server
+        [object]$Server,
+
+	    [Parameter()]
+	    [bool]$AllowExport,
+
+        [Parameter()]
+        [bool]$NestedVirtualization,
+
+        [Parameter()]
+        [string]$Note
     )
 
     begin {
@@ -305,6 +323,21 @@ function Set-VergeVM {
         if ($PSBoundParameters.ContainsKey('BootDelay')) {
             $body['boot_delay'] = $BootDelay
             $changes.Add("Boot Delay: ${BootDelay}s")
+        }
+
+	    if ($PSBoundParameters.ContainsKey('AllowExport')) {
+	        $body['allow_export'] = $AllowExport
+	        $changes.Add("Allow Export: $AllowExport")
+	    }
+
+        if ($PSBoundParameters.ContainsKey('NestedVirtualization')) {
+            $body['nested_virtualization'] = $NestedVirtualization
+            $changes.Add("Nested Virtualization: $NestedVirtualization")
+        }
+
+        if ($PSBoundParameters.ContainsKey('Note')) {
+            $body['note'] = $Note
+            $changes.Add("Note: $Note")
         }
 
         # Check if there are any changes to make

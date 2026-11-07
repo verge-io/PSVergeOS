@@ -63,14 +63,25 @@ Get-VergeVM | Where-Object { $_.RAM -gt 8192 }
 |----------|-------------|
 | `Key` | Unique identifier |
 | `Name` | VM display name |
+| `Description` | VM description |
 | `PowerState` | Current power state (Running, Stopped, etc.) |
+| `Status` | Current VM status |
+| `IsRunning` | Is VM running |
 | `CPUCores` | Allocated CPU cores |
 | `RAM` | Allocated memory in MB |
 | `Cluster` | Cluster name |
 | `Node` | Current node |
 | `OSFamily` | Operating system type |
 | `UEFI` | UEFI boot enabled |
+| `SecureBoot` | Secure boot enabled |
+| `MachineType` | Current VM machine type |
+| `IsSnapshot` | Is VM snapshot |
 | `GuestAgent` | Guest agent enabled |
+| `AllowExport` | Allow export enabled |
+| `OwnerUsed` | VM current owner |
+| `BootDelay` | Current boot delay |
+| `NestedVirtualization` | Nested virtualization enabled |
+| `Note` | Current note |
 
 ---
 
@@ -126,6 +137,29 @@ Set-VergeVM -Name <String> [-NewName <String>] [-Description <String>] [-CPUCore
     [-RAM <Int32>] [-GuestAgent <Boolean>] [-PassThru]
 Set-VergeVM -VM <Object> [parameters...]
 ```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `-Name` | String | Yes | VM name |
+| `-NewName` | String | No | New VM Name |
+| `-Description` | String | No | VM Description |
+| `-CPUCores` | Int32 | No | Number of CPU cores |
+| `-Ram` | Int32 | No | Memory in MB |
+| `-OSFamily` | String | No | Linux, Windows, FreeBSD, Other |
+| `-GuestAgent` | Switch | No | Enable guest agent support |
+| `-UEFI` | Switch | No | Enable UEFI boot |
+| `-SecureBoot` | Switch | No | Enable Secure boot (requires UEFI) |
+| `-Enabled` | Switch | No | Enable VM |
+| `-Console` | String | No | VNC, Spice, Serial, None |
+| `-Video` | String | No | Standard, Cirrus, VMware, QXL, Virtio, None |
+| `-BootOrder` | String | No | DiskCD, DiskCDNetwork, CDDisk, NetworkDisk, Network, Disk, CD |
+| `-BootDelay` | Int32 | No | Boot delay in seconds (0 - 60) |
+| `-AllowExport` | Switch | No | Enable allow export |
+| `-NestedVirtualization` | Switch | No | Enable nested virtualization |
+| `-Note` | String | No | Set VM note |
+| `-PassThru` | Switch | No | Return modified VM |
 
 **Examples:**
 

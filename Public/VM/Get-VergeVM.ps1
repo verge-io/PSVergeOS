@@ -172,6 +172,12 @@ function Get-VergeVM {
             'machine#ha_group as ha_group'
             'machine#snapshot_profile as snapshot_profile'
             'machine#snapshot_profile#name as snapshot_profile_name'
+	        'allow_export'
+            'owner'
+            'owner_user'
+            'boot_delay'
+            'nested_virtualization'
+            'note'
         ) -join ','
 
         try {
@@ -206,21 +212,21 @@ function Get-VergeVM {
 
                 # Map status to user-friendly PowerState
                 $powerStateDisplay = switch ($vm.status) {
-                    'running'      { 'Running' }
-                    'stopped'      { 'Stopped' }
-                    'hibernated'   { 'Hibernated' }
-                    'stopping'     { 'Stopping' }
-                    'starting'     { 'Starting' }
-                    'initializing' { 'Starting' }
-                    'migrating'    { 'Migrating' }
-                    'initmigrate'  { 'Migrating' }
-                    'startmigrate' { 'Migrating' }
-                    'migratecomplete' { 'Migrating' }
-                    'unresponsive' { 'Unresponsive' }
-                    'error'        { 'Error' }
-                    'maintenance'  { 'Maintenance' }
-                    'hibernating'  { 'Hibernating' }
-                    default        { $vm.status }
+                    'running'           { 'Running' }
+                    'stopped'           { 'Stopped' }
+                    'hibernated'        { 'Hibernated' }
+                    'stopping'          { 'Stopping' }
+                    'starting'          { 'Starting' }
+                    'initializing'      { 'Starting' }
+                    'migrating'         { 'Migrating' }
+                    'initmigrate'       { 'Migrating' }
+                    'startmigrate'      { 'Migrating' }
+                    'migratecomplete'   { 'Migrating' }
+                    'unresponsive'      { 'Unresponsive' }
+                    'error'             { 'Error' }
+                    'maintenance'       { 'Maintenance' }
+                    'hibernating'       { 'Hibernating' }
+                    default             { $vm.status }
                 }
 
                 # Determine if VM uses Q35 chipset (vs i440FX)
@@ -228,32 +234,37 @@ function Get-VergeVM {
 
                 # Create output object
                 $output = [PSCustomObject]@{
-                    PSTypeName       = 'Verge.VM'
-                    Key              = [int]$vm.'$key'
-                    Name             = $vm.name
-                    Description      = $vm.description
-                    PowerState       = $powerStateDisplay
-                    Status           = $vm.status
-                    IsRunning        = [bool]$vm.running
-                    CPUCores         = [int]$vm.cpu_cores
-                    RAM              = [int]$vm.ram
-                    OSFamily         = $vm.os_family
-                    GuestAgent       = [bool]$vm.guest_agent
-                    UEFI             = [bool]$vm.uefi
-                    SecureBoot       = [bool]$vm.secure_boot
-                    MachineType      = $vm.machine_type
-                    IsQ35            = $isQ35
-                    Enabled          = [bool]$vm.enabled
-                    IsSnapshot       = [bool]$vm.is_snapshot
-                    Cluster          = $vm.cluster_name
-                    ClusterKey       = $vm.cluster_key
-                    Node             = $vm.node_name
-                    NodeKey          = $vm.node_key
-                    HAGroup          = $vm.ha_group
-                    SnapshotProfile  = $vm.snapshot_profile_name
-                    MachineKey       = $vm.machine
-                    Created          = if ($vm.created) { [DateTimeOffset]::FromUnixTimeSeconds($vm.created).LocalDateTime } else { $null }
-                    Modified         = if ($vm.modified) { [DateTimeOffset]::FromUnixTimeSeconds($vm.modified).LocalDateTime } else { $null }
+                    PSTypeName              = 'Verge.VM'
+                    Key                     = [int]$vm.'$key'
+                    Name                    = $vm.name
+                    Description             = $vm.description
+                    PowerState              = $powerStateDisplay
+                    Status                  = $vm.status
+                    IsRunning               = [bool]$vm.running
+                    CPUCores                = [int]$vm.cpu_cores
+                    RAM                     = [int]$vm.ram
+                    OSFamily                = $vm.os_family
+                    GuestAgent              = [bool]$vm.guest_agent
+                    UEFI                    = [bool]$vm.uefi
+                    SecureBoot              = [bool]$vm.secure_boot
+                    MachineType             = $vm.machine_type
+                    IsQ35                   = $isQ35
+                    Enabled                 = [bool]$vm.enabled
+                    IsSnapshot              = [bool]$vm.is_snapshot
+                    Cluster                 = $vm.cluster_name
+                    ClusterKey              = $vm.cluster_key
+                    Node                    = $vm.node_name
+                    NodeKey                 = $vm.node_key
+                    HAGroup                 = $vm.ha_group
+                    SnapshotProfile         = $vm.snapshot_profile_name
+                    MachineKey              = $vm.machine
+                    Created                 = if ($vm.created) { [DateTimeOffset]::FromUnixTimeSeconds($vm.created).LocalDateTime } else { $null }
+                    Modified                = if ($vm.modified) { [DateTimeOffset]::FromUnixTimeSeconds($vm.modified).LocalDateTime } else { $null }
+		            AllowExport	            = [bool]$vm.allow_export
+                    OwnerUser               = $vm.owner_user
+                    BootDelay               = [int]$vm.boot_delay
+                    NestedVirtualization    = [bool]$vm.nested_virtualization
+                    Note                    = $vm.note
                 }
 
                 # Add hidden properties for pipeline support
